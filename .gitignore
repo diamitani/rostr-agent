@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+*.pglite
+.rostr-data/
+dashboard/.next/
+dashboard/node_modules/
+.DS_Store
+*.log

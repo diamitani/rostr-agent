@@ -1,0 +1,67 @@
+{
+  "name": "rostr-agent",
+  "version": "0.1.0",
+  "description": "ROSTR Agent Framework — AI Agent OS with knowledge brain, NPAO task engine, and premium dashboard",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "rostr": "src/cli/index.ts"
+  },
+  "scripts": {
+    "dev": "tsx src/cli/index.ts",
+    "serve": "tsx src/cli/index.ts serve",
+    "build": "tsc && node dist/cli/index.js",
+    "dashboard": "cd dashboard && npm run dev",
+    "dashboard:build": "cd dashboard && npm run build",
+    "start": "concurrently \"npm run serve\" \"npm run dashboard\"",
+    "doctor": "tsx src/cli/index.ts doctor",
+    "test": "vitest run",
+    "postinstall": "echo '✅ ROSTR installed. Run: npx rostr init'"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "@electric-sql/pglite": "0.4.3",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "gray-matter": "^4.0.3",
+    "inquirer": "^9.2.0",
+    "marked": "^18.0.0",
+    "openai": "^4.0.0",
+    "ora": "^8.0.0",
+    "pgvector": "^0.2.0",
+    "uuid": "^9.0.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10",
+    "concurrently": "^8.2.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT",
+  "author": "Patrick Diamitani",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diamitani/rostr-agent.git"
+  },
+  "keywords": [
+    "ai-agent",
+    "agent-framework",
+    "npao",
+    "knowledge-graph",
+    "personal-ai",
+    "agent-os"
+  ]
+}
