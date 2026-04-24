@@ -38,7 +38,9 @@ ROSTR is a **standalone AI agent framework** that gives you a personal AI assist
 - 💾 **ContextEngine** — Persistent session memory across conversations
 - 🔄 **PAL** — Prompt Abstraction Layer that compiles and enhances your prompts
 - 📦 **gStack** — Skill library & plugin system. Convert and import skills from Claude, Antigravity, and Codex into the ROSTR ecosystem.
-- 📡 **Multi-LLM** — Works with OpenAI, Anthropic, DeepSeek, Groq (BYOK)
+- 🆓 **Totally Free & Local** — Full support for **Ollama**. Run powerful models like `deepseek-coder-v2`, `phi3`, and `llama3` locally with zero API costs.
+- 📡 **Multi-LLM** — Works with OpenAI, Anthropic, DeepSeek, Groq, and Ollama (BYOK)
+- ☁️ **One-Click Deploy** — Terraform scripts for AWS/Azure/Vercel for production-grade hosting.
 - 🎛️ **Premium Dashboard** — Dark mode UI with chat, brain browser, task board, and settings
 
 ## Architecture

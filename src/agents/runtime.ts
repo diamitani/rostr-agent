@@ -99,8 +99,33 @@ class GroqProvider implements LLMProvider {
   }
 }
 
-// Provider chain: OpenAI → Anthropic → DeepSeek → Groq
+class OllamaProvider implements LLMProvider {
+  name = 'ollama';
+  private model: string;
+  private endpoint: string;
+
+  constructor() {
+    this.model = process.env.OLLAMA_MODEL || 'phi3'; // phi3 (fast), deepseek-coder-v2 (coding), llama3 (intermediate)
+    this.endpoint = process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/chat';
+  }
+
+  available() { return process.env.USE_OLLAMA === 'true'; }
+
+  async chat(messages: ChatMessage[]): Promise<string> {
+    const res = await fetch(this.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: this.model, messages, stream: false }),
+    });
+    if (!res.ok) throw new Error(`Ollama: ${res.statusText}`);
+    const data = await res.json() as { message: { content: string } };
+    return data.message?.content || '';
+  }
+}
+
+// Provider chain: Ollama → OpenAI → Anthropic → DeepSeek → Groq
 const providers: LLMProvider[] = [
+  new OllamaProvider(),
   new OpenAIProvider(),
   new AnthropicProvider(),
   new DeepSeekProvider(),

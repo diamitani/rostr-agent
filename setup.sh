@@ -86,6 +86,36 @@ prompt_key "OPENAI_API_KEY" "OpenAI (recommended)" "sk-..."
 prompt_key "ANTHROPIC_API_KEY" "Anthropic (Claude)" "sk-ant-..."
 prompt_key "GROQ_API_KEY" "Groq (fast, free)" "gsk_..."
 
+# ── Ollama Setup ──────────────────────────────────────────
+echo ""
+echo -ne "${BOLD}Use local LLMs with Ollama? (totally free) [y/N]: ${RESET}"
+read -r use_ollama
+if [[ "$use_ollama" =~ ^[Yy]$ ]]; then
+    if ! command -v ollama &> /dev/null; then
+        echo -e "${YELLOW}  ○ Ollama not found. Install from https://ollama.com/${RESET}"
+    else
+        echo -e "  ${GREEN}✓ Ollama detected${RESET}"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s|^USE_OLLAMA=.*|USE_OLLAMA=true|" .env
+        else
+            sed -i "s|^USE_OLLAMA=.*|USE_OLLAMA=true|" .env
+        fi
+        echo -e "${BOLD}  Download recommended models?${RESET}"
+        echo -e "  1) ${CYAN}phi3${RESET} (fast, low resource)"
+        echo -e "  2) ${CYAN}deepseek-coder-v2:16b${RESET} (powerful coding)"
+        echo -e "  3) ${CYAN}llama3${RESET} (balanced intermediate)"
+        echo -n "  Select (e.g. 1,2): "
+        read -r models
+        for m in ${models//,/ }; do
+            case $m in
+                1) ollama pull phi3 ;;
+                2) ollama pull deepseek-coder-v2:16b ;;
+                3) ollama pull llama3 ;;
+            esac
+        done
+    fi
+fi
+
 # ── Initialize Brain ─────────────────────────────────────
 echo ""
 echo -e "${BOLD}Initializing brain...${RESET}"
