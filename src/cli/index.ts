@@ -357,4 +357,52 @@ program
     process.exit(0);
   });
 
+// ── SKILLS (gStack) ─────────────────────────────────────────
+const skillCmd = program.command('skill').description('gStack skill library');
+
+skillCmd
+  .command('list')
+  .description('List all available skills in gStack')
+  .action(async () => {
+    const { getGStack } = await import('../core/gstack.js');
+    const gstack = getGStack();
+    await gstack.loadLibrary();
+    const skills = gstack.listSkills();
+
+    if (skills.length === 0) {
+      console.log(dim('No skills found in library.'));
+    } else {
+      console.log(gold(`\n${skills.length} skills available:\n`));
+      for (const s of skills) {
+        console.log(`  ${chalk.white(s.name)} ${dim(`(${s.provider || 'local'})`)}`);
+        console.log(dim(`    ${s.description}`));
+        if (s.triggers.length > 0) {
+          console.log(dim(`    Triggers: ${s.triggers.join(', ')}`));
+        }
+        console.log();
+      }
+    }
+    process.exit(0);
+  });
+
+skillCmd
+  .command('import <path>')
+  .description('Import and convert a skill from Claude/Antigravity/Codex')
+  .option('-p, --provider <name>', 'Source provider name', 'unknown')
+  .action(async (path, opts) => {
+    const { getGStack } = await import('../core/gstack.js');
+    const { readFileSync } = await import('fs');
+    const gstack = getGStack();
+    
+    try {
+      const source = readFileSync(path, 'utf-8');
+      const skill = await gstack.convertSkill(source, opts.provider);
+      console.log(chalk.green(`✓ Skill imported and converted: ${skill.name}`));
+      console.log(dim(`  Location: skills/library/${skill.name}.json`));
+    } catch (e) {
+      console.error(chalk.red(`Failed to import skill: ${e}`));
+    }
+    process.exit(0);
+  });
+
 program.parse();

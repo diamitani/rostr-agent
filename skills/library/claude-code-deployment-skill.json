@@ -1,0 +1,13 @@
+{
+  "name": "claude-code-deployment-skill",
+  "description": "Imported claude skill: Claude Code Deployment Skill",
+  "triggers": [
+    "deploy to vercel",
+    "prod deploy",
+    "push to prod"
+  ],
+  "workflow": [],
+  "constraints": [],
+  "provider": "claude",
+  "raw_source": "# Claude Code Deployment Skill\ntriggers: [\"deploy to vercel\", \"prod deploy\", \"push to prod\"]\ndescription: \"Handles secure Vercel deployments with environment variable validation\"\nconstraints: [\"Always run lint first\", \"Check VERCEL_TOKEN existence\"]\n\n1. Run npm run lint\n2. Check env vars\n3. Run vercel --prod\n"
+}

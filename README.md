@@ -37,6 +37,7 @@ ROSTR is a **standalone AI agent framework** that gives you a personal AI assist
 - 📋 **NPAO Task Engine** — Necessity → Anxiety → Priority → Opportunity task classification
 - 💾 **ContextEngine** — Persistent session memory across conversations
 - 🔄 **PAL** — Prompt Abstraction Layer that compiles and enhances your prompts
+- 📦 **gStack** — Skill library & plugin system. Convert and import skills from Claude, Antigravity, and Codex into the ROSTR ecosystem.
 - 📡 **Multi-LLM** — Works with OpenAI, Anthropic, DeepSeek, Groq (BYOK)
 - 🎛️ **Premium Dashboard** — Dark mode UI with chat, brain browser, task board, and settings
 
@@ -75,6 +76,10 @@ rostr task done <id>          # Complete task
 # Memory
 rostr context flash           # Load recent context
 rostr context save            # Save session
+
+# Skills (gStack)
+rostr skill list              # List library skills
+rostr skill import ./skill.md # Import external skill
 
 # Server
 rostr serve                   # Start gateway (port 3001)

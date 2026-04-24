@@ -6,6 +6,7 @@
 import { classifyNPAO, detectPhase, type NPAOCategory, type Phase } from './npao.js';
 import { retrieveContext } from './context-engine.js';
 import { hybridSearch } from '../core/search.js';
+import { getGStack, type Skill } from '../core/gstack.js';
 
 export interface TaskSpec {
   primary_intent: string;
@@ -17,6 +18,7 @@ export interface TaskSpec {
   npao_category: NPAOCategory;
   phase: Phase;
   context_injected: string[];
+  matched_skill?: string;
   enhanced_prompt: string;
 }
 
@@ -106,11 +108,25 @@ export async function compilePAL(userInput: string): Promise<TaskSpec> {
   // Stage 3: Semantic Enhancement
   const { criteria, subTasks } = enhance(intent, constraints);
 
-  // Stage 4: Runtime Compilation (NPAO classification)
+  // Stage 4: Runtime Compilation (NPAO classification + Skill Resolution)
   const category = classifyNPAO(userInput);
   const phase = detectPhase(userInput);
 
+  // Skill Resolution via gStack
+  const gstack = getGStack();
+  await gstack.loadLibrary();
+  const matchedSkill = gstack.findMatchingSkill(userInput);
+  
+  if (matchedSkill) {
+    constraints.push(...matchedSkill.constraints);
+    criteria.push(`Adhere to skill protocol: ${matchedSkill.name}`);
+  }
+
   // Stage 5: Build enhanced prompt
+  const skillBlock = matchedSkill 
+    ? `\n\n[Skill Active: ${matchedSkill.name}]\nDescription: ${matchedSkill.description}`
+    : '';
+
   const contextBlock = contextItems.length > 0
     ? `\n\nRelevant context:\n${contextItems.map(c => `- ${c}`).join('\n')}`
     : '';
@@ -131,6 +147,7 @@ export async function compilePAL(userInput: string): Promise<TaskSpec> {
     npao_category: category,
     phase,
     context_injected: contextItems,
-    enhanced_prompt: enhanced,
+    matched_skill: matchedSkill?.name,
+    enhanced_prompt: `${enhanced}${skillBlock}`,
   };
 }
