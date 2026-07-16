@@ -1,0 +1,43 @@
+# ROSTR Agent — .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config files with secrets
+.env
+
+# Node (for web/dist bundles — not tracked in source)
+node_modules/
+package-lock.json
+
+# Build artifacts
+*.log
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Test artifacts
+.coverage
+htmlcov/
