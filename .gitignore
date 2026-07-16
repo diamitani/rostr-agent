@@ -41,3 +41,4 @@ package-lock.json
 # Test artifacts
 .coverage
 htmlcov/
+apps/desktop/release/
