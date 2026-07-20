@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROSTR Agent — Self-Improving Multi-Agent Framework</title>
+<meta name="description" content="Production-grade multi-agent framework with PAL, NPAO, RAG DAL, Rostr Hub. Download. Deploy. Scale.">
+<style>
+:root{
+  --bg:#0a0908;--surface:#121110;--surface2:#1a1816;--border:#2a2724;
+  --text:#ece8e1;--muted:#9a948a;--dim:#6a645c;--cream:#e9e5dd;--ink:#161412;
+  --accent:#5eb8c4;--accent2:#e2c77a;
+  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;--ease:cubic-bezier(.16,1,.3,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+
+.hero{
+  min-height:92vh;display:flex;align-items:flex-end;padding:140px 2rem 88px;
+  background:linear-gradient(165deg,#141210 0%,#0a0908 48%,#080706 100%);
+}
+
+.hero-inner{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:2}
+.hero h1{
+  font-size:clamp(40px,6.8vw,72px);font-weight:500;line-height:.98;
+  letter-spacing:-.03em;margin-bottom:1.4rem;max-width:14ch;
+}
+
+.hero h1 em{
+  font-family:var(--display);font-style:italic;color:var(--accent);
+}
+
+.hero-tag{font-size:17px;color:var(--muted);max-width:34rem;line-height:1.55;margin-bottom:2.25rem;}
+
+.btn{
+  padding:13px 26px;border-radius:999px;font-size:14px;font-weight:600;
+  text-decoration:none;display:inline-block;transition:all .2s var(--ease);
+}
+
+.btn-primary{background:var(--cream);color:var(--ink)}
+.btn-primary:hover{opacity:.9;transform:translateY(-2px)}
+
+.section{padding:120px 2rem}
+.section-inner{max-width:1120px;margin:0 auto}
+
+h2{font-size:clamp(30px,4.2vw,42px);font-weight:500;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.25rem}
+h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:26px;text-decoration:none;color:inherit;
+  transition:transform .22s var(--ease),border-color .22s var(--ease);
+}
+
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card h3{font-size:17px;font-weight:600;margin-bottom:6px}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.55}
+
+.footer{border-top:1px solid var(--border);padding:64px 2rem 40px;background:var(--surface)}
+.footer-inner{max-width:1120px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px;margin-bottom:48px}
+.footer-col a{display:block;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:9px}
+.footer-col a:hover{color:var(--text)}
+
+@media(max-width:640px){
+  .hero{padding:120px 1.25rem 64px}
+  .section{padding:72px 1.25rem}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Hermes + ROSTR.<br><em>Production Ready.</em></h1>
+    <p class="hero-tag">Self-improving multi-agent framework combining Hermes Agent runtime with ROSTR intelligence layer (PAL, NPAO, RAG DAL, Hub). Download. Deploy. Scale.</p>
+    <a href="#skills" class="btn btn-primary">Explore Skills →</a>
+  </div>
+</header>
+
+<section class="section" id="skills">
+  <div class="section-inner">
+    <h2>41 Production <em>Skills</em></h2>
+    <p style="font-size:16.5px;color:var(--muted);max-width:36rem;margin-bottom:3.25rem">Generalized, LLM-agnostic production skills. From GTM automation to developer tools, video production to data analytics.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>GTM & Sales</h3>
+        <p>Clay Prospecting, Atlas Agent Factory, GTM Architect, JTBD Builder, and more for revenue teams.</p>
+      </div>
+      <div class="card">
+        <h3>Developer Tools</h3>
+        <p>PAL Compiler, Context Engine, ROSTR Agent Builder, n8n Engineer, Prompt Rewriter.</p>
+      </div>
+      <div class="card">
+        <h3>Content & Video</h3>
+        <p>Video Editor (HyperFrames), Video Studio, Case Study Builder, Project Instructions.</p>
+      </div>
+      <div class="card">
+        <h3>Data & Analytics</h3>
+        <p>HubSpot Analyst, Dashboard Builder, Token Spend Analyzer, Clay Enricher.</p>
+      </div>
+      <div class="card">
+        <h3>Automation</h3>
+        <p>n8n Engineer, Workflow Builder, n8n Architect, Execution Analyst, CSV Router.</p>
+      </div>
+      <div class="card">
+        <h3>Operations</h3>
+        <p>Executive Assistant, File Organizer, Project Closeout, Handoff Builder, Recap Generator.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <h2>Quick Start</h2>
+    <p style="font-size:16.5px;color:var(--muted);max-width:36rem;margin-bottom:3.25rem">Three ways to get started.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Docker (60 seconds)</h3>
+        <p><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px">docker-compose up -d</code></p>
+        <p style="margin-top:10px;font-size:12px">Includes API, Ollama, PostgreSQL, Redis, Grafana.</p>
+      </div>
+      <div class="card">
+        <h3>Local Install</h3>
+        <p><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px">./setup-rostr.sh</code></p>
+        <p style="margin-top:10px;font-size:12px">Works on macOS, Linux, Termux. Auto-detects environment.</p>
+      </div>
+      <div class="card">
+        <h3>AWS Cloud</h3>
+        <p><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px">terraform apply</code></p>
+        <p style="margin-top:10px;font-size:12px">Lambda, DynamoDB, S3, Cognito. Production-ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px">ROSTR Agent</div>
+        <p style="font-size:12px;color:var(--dim);max-width:260px">Self-improving multi-agent framework combining Hermes Agent with ROSTR intelligence layer.</p>
+      </div>
+      <div>
+        <h4 style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:14px">Project</h4>
+        <a href="https://github.com/diamitani/rostr-agent">GitHub Repo</a>
+        <a href="#skills">Skills Marketplace</a>
+        <a href="https://zenodo.org/records/19550414">Research Paper</a>
+      </div>
+      <div>
+        <h4 style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:14px">Docs</h4>
+        <a href="/README.md">README</a>
+        <a href="/rostr/QUICKSTART.md">Quick Start</a>
+        <a href="/rostr/PRODUCTION_READINESS.md">Roadmap</a>
+      </div>
+      <div>
+        <h4 style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:14px">Connect</h4>
+        <a href="https://linkedin.com/in/diamitani">LinkedIn</a>
+        <a href="mailto:patrick.diamitani@gmail.com">Email</a>
+        <a href="https://www.diamitani.com">Portfolio</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
