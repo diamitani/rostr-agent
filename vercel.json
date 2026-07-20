@@ -1,0 +1,40 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "industries.diamitani.com" }],
+      "destination": "/industries"
+    },
+    {
+      "source": "/:path((?!assets/|industries).*)",
+      "has": [{ "type": "host", "value": "industries.diamitani.com" }],
+      "destination": "/industries/:path"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "art.diamitani.com" }],
+      "destination": "/art"
+    },
+    {
+      "source": "/:path((?!assets/|art).*)",
+      "has": [{ "type": "host", "value": "art.diamitani.com" }],
+      "destination": "/art/:path"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "music.diamitani.com" }],
+      "destination": "/music"
+    },
+    {
+      "source": "/:path((?!assets/|music).*)",
+      "has": [{ "type": "host", "value": "music.diamitani.com" }],
+      "destination": "/music/:path"
+    },
+    {
+      "source": "/",
+      "destination": "/home"
+    }
+  ]
+}
