@@ -465,7 +465,7 @@ h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
     <div class="section-header">
       <div class="section-label">Performance</div>
       <h2>Proven Results.<br><em>Real Data.</em></h2>
-      <p class="section-desc">Evaluated against vanilla Hermes across 200 diverse tasks. Same model, temperature, and tools. Only variable: ROSTR structure.</p>
+      <p class="section-desc">Evaluated against Hermes runtime on 11 real-world benchmark tasks across GTM, code, content, analytics, ops, productivity, research, and integration. Full evaluation report and benchmark details available on GitHub.</p>
     </div>
     <div style="overflow-x:auto;margin-top:2rem">
       <table style="width:100%;border-collapse:collapse;font-size:13px">
@@ -480,39 +480,39 @@ h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
         <tbody>
           <tr style="border-bottom:1px solid var(--border)">
             <td style="padding:12px">Task Completion Rate</td>
-            <td style="padding:12px">68%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">91%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+23pp</td>
+            <td style="padding:12px">76.9%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">88.6%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">+15.2pp</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">First-Attempt Accuracy</td>
-            <td style="padding:12px">54%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">82%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+28pp</td>
+            <td style="padding:12px">Accuracy</td>
+            <td style="padding:12px">70.5%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">78.5%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">+11.5pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Coherence</td>
+            <td style="padding:12px">71.4%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">85.5%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">+19.7pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Decision Quality</td>
+            <td style="padding:12px">69.9%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">79.0%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">+13.0pp</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
             <td style="padding:12px">Context Utilization</td>
-            <td style="padding:12px">41%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">89%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+48pp</td>
+            <td style="padding:12px">79.4%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">77.5%</td>
+            <td style="padding:12px">−2.3pp</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Multi-Step Coherence</td>
-            <td style="padding:12px">62%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">87%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+25pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Knowledge Retention (cross-session)</td>
-            <td style="padding:12px">12%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">94%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+82pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Decision Quality (expert rated)</td>
-            <td style="padding:12px">6.2/10</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">8.4/10</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+2.2</td>
+            <td style="padding:12px">Knowledge Retention</td>
+            <td style="padding:12px">73.4%</td>
+            <td style="padding:12px;color:var(--accent);font-weight:600">70.9%</td>
+            <td style="padding:12px">−3.3pp</td>
           </tr>
           <tr>
             <td style="padding:12px">Avg Tokens per Completed Task</td>
