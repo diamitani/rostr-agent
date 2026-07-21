@@ -17,7 +17,22 @@
 
 ROSTR Agent is a **production-grade multi-agent framework** that fuses the power of the Hermes Agent runtime with the **ROSTR architecture** — a unified system for agent orchestration, knowledge retrieval, and persistent state management.
 
+**Website:** https://rostragent.com
+
 It's the same self-improving AI agent you know (skills from experience, persistent memory, 20+ messaging platforms, any LLM provider), now with **first-class multi-agent orchestration built in**.
+
+### Real Benchmark Results
+
+ROSTR outperforms Hermes baseline across all key metrics:
+
+| Metric | Hermes | ROSTR | Improvement |
+|--------|--------|-------|---|
+| Task Completion | 76.9% | 88.6% | **+15.2pp** |
+| Accuracy | 70.5% | 78.5% | **+11.5pp** |
+| Coherence | 71.4% | 85.5% | **+19.7pp** |
+| Decision Quality | 69.9% | 79.0% | **+13.0pp** |
+
+Evaluated on 11 real tasks across GTM, code, content, analytics, ops, productivity, research, and integration domains. [Full evaluation report →](EVALUATION_REPORT.md)
 
 ### What makes ROSTR Agent different
 
@@ -47,24 +62,80 @@ User Input → PAL (Compiler) → NPAO (Orchestrator) → Agents + RAG DAL + Hub
 
 ---
 
-## Quick Start
+## What ROSTR Is vs. Isn't
+
+**ROSTR is:**
+- A framework/library you integrate into your agents
+- A CLI tool with 41 generalized skills
+- A set of architectural patterns (PAL, NPAO, RAG DAL, Hub)
+- A way to make your agents measurably better (15% task completion improvement)
+
+**ROSTR is NOT:**
+- A dashboard UI (use terminal or integrate into your app)
+- A hosted service (run locally or deploy to your own cloud)
+- A replacement for Hermes (it's a layer on top)
+- An LLM (it orchestrates Claude, GPT, or local models)
+
+---
+
+## Quick Start (2 minutes)
+
+### 1. Install
 
 ```bash
-# Clone
 git clone https://github.com/diamitani/rostr-agent.git
 cd rostr-agent
+./setup-rostr.sh                    # Auto-detects OS, creates venv
+```
 
-# Install
-pip install -e .
+### 2. Verify Installation
 
-# Run
-rostr-agent
+```bash
+rostr-agent --version               # Should output: ROSTR Agent 0.1.0
+rostr-agent skills list             # Shows all 41 skills
+```
 
-# Or use the ROSTR CLI directly
-rostr-agent pal compile "Research best RAG architectures for production"
-rostr-agent npao classify --revenue "Fix the auth bug in production"
-rostr-agent ragdal search "Latest advances in multi-agent orchestration"
-rostr-agent hub register --name "Builder Agent" --type builder
+### 3. Run Benchmark
+
+```bash
+rostr-agent eval run                # Evaluates ROSTR vs Hermes
+cat eval_results.json               # View raw results
+cat EVALUATION_REPORT.md            # View formatted report
+```
+
+### 4. Use in Your Code
+
+```python
+from rostr import PALCompiler, NPAORouter, RAGDALRetriever, Hub
+
+# Compile a natural language task
+manifest = PALCompiler.compile("Write a cold email to prospects in the HR tech space")
+
+# Route to specialist
+route = NPAORouter.route(manifest)  # Returns: gtm_specialist
+
+# Retrieve context
+context = RAGDALRetriever.search(manifest, route)
+
+# Store knowledge
+Hub.update(workspace_id, knowledge_items)
+```
+
+### 5. Use via CLI
+
+```bash
+# Compile natural language to structured task
+rostr-agent pal compile "Research best RAG architectures"
+
+# Classify and route a task
+rostr-agent npao classify "Fix the auth bug in production"
+
+# Search knowledge base
+rostr-agent ragdal search "Vector database best practices"
+
+# Manage workspace memory
+rostr-agent hub list                # Show all registered agents
+rostr-agent hub register --name "Research Agent" --type researcher
 ```
 
 ---
@@ -177,10 +248,11 @@ Patrick Diamitani · April 2026 · 22,000 words · 27 references
 
 | Site | URL | Stack |
 |------|-----|-------|
-| ROSTR Agent (this repo) | `github.com/diamitani/rostr-agent` | Python, Hermes + ROSTR |
-| SaaS Landing | `rostr-framework.vercel.app` | HTML, ethereal glass |
-| Platform Dashboard | `platform-virid-psi.vercel.app` | Next.js 15 |
-| PAL Docs | `pal-site-three.vercel.app` | Docusaurus 3 |
+| **Official Site** | [`rostragent.com`](https://rostragent.com) | Next.js + Research-backed positioning |
+| GitHub Repo | [`github.com/diamitani/rostr-agent`](https://github.com/diamitani/rostr-agent) | Python, Hermes + ROSTR |
+| Research Paper | [ROSTR_FRAMEWORK_RESEARCH.md](ROSTR_FRAMEWORK_RESEARCH.md) | 3,200+ word technical whitepaper |
+| Benchmarks | [`eval_results.json`](eval_results.json) | Real evaluation data (11 tasks) |
+| Evaluation Report | [EVALUATION_REPORT.md](EVALUATION_REPORT.md) | Full methodology and findings |
 
 ---
 
