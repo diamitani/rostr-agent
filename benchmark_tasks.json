@@ -1,0 +1,242 @@
+{
+  "version": "1.0",
+  "domains": ["gtm", "code", "content", "analytics", "ops", "productivity", "research", "integration"],
+  "evaluation_metrics": {
+    "task_completion": "Did the agent complete the task (0-100%)?",
+    "accuracy": "Is the output correct/useful (0-100%)?",
+    "context_utilization": "Did it use all provided context (0-100%)?",
+    "coherence": "Is the output coherent and well-structured (0-100%)?",
+    "knowledge_retention": "Did it remember context across steps (0-100%)?",
+    "tokens_used": "Total tokens consumed (lower is better)",
+    "decision_quality": "Quality of reasoning and decisions (0-100%)"
+  },
+  "tasks": [
+    {
+      "id": "gtm_001",
+      "domain": "gtm",
+      "name": "Prospect Research Brief",
+      "difficulty": "medium",
+      "description": "Generate a prospect research brief for a Series B SaaS company in the HR tech space",
+      "input": {
+        "company_name": "TalentFlow",
+        "industry": "HR Tech / Talent Management",
+        "stage": "Series B",
+        "target_persona": "VP People Operations",
+        "context": "Company raised $15M Series B, 50 employees, focusing on employee retention"
+      },
+      "expected_output_criteria": {
+        "firmographics": "Company size, stage, funding, headcount estimated",
+        "decision_makers": "Key personas identified with likely roles",
+        "recent_news": "Latest funding, hires, product launches",
+        "value_angle": "Personalized Atlas HXM value proposition",
+        "personalization": "Specific to prospect company, not generic",
+        "actionability": "Ready to use for outreach"
+      }
+    },
+    {
+      "id": "gtm_002",
+      "domain": "gtm",
+      "name": "Cold Email Sequence",
+      "difficulty": "medium",
+      "description": "Write a 3-email cold sequence for a prospect in the EOR space",
+      "input": {
+        "prospect": {
+          "name": "Sarah Chen",
+          "title": "Head of International Expansion",
+          "company": "GrowthTech",
+          "company_context": "Raised Series C, expanding to 12 new countries"
+        },
+        "product": "Atlas HXM EOR platform",
+        "angle": "Simplifying global hiring without local entities"
+      },
+      "expected_output_criteria": {
+        "email_1_open": "Compelling subject line + hook (personalized)",
+        "email_2_value": "Clear value prop, 1-2 sentences max",
+        "email_3_cta": "Specific CTA (15-min discovery call)",
+        "authenticity": "Sounds like a human, not a bot",
+        "compliance": "No aggressive sales language, helpful tone",
+        "completion": "All 3 emails provided"
+      }
+    },
+    {
+      "id": "gtm_003",
+      "domain": "gtm",
+      "name": "Use Case Building",
+      "difficulty": "hard",
+      "description": "Build a compelling ROI use case: HR team at 500-person company switching to Atlas",
+      "input": {
+        "customer_size": 500,
+        "departments": ["HR", "Finance", "Legal"],
+        "problem": "Managing payroll, benefits, compliance across 8 countries manually",
+        "timeline": "3-year contract value"
+      },
+      "expected_output_criteria": {
+        "roi_calculation": "Realistic cost savings (FTE hours, compliance risk reduction)",
+        "before_after": "Clear current vs. future state",
+        "metrics": "Quantified: time saved, cost reduction, risk mitigation",
+        "narrative": "Compelling story arc with specific numbers",
+        "credibility": "Conservative estimates, not over-promised"
+      }
+    },
+    {
+      "id": "code_001",
+      "domain": "code",
+      "name": "Code Review",
+      "difficulty": "medium",
+      "description": "Review a REST API endpoint for security and performance issues",
+      "input": {
+        "code": "def get_user_profile(user_id): db = connect_db(); user = db.query(f'SELECT * FROM users WHERE id = {user_id}'); return user",
+        "context": "Production endpoint handling 10k req/sec",
+        "language": "Python"
+      },
+      "expected_output_criteria": {
+        "sql_injection": "Identified parameterized query needed",
+        "connection_pooling": "Noted connection not pooled",
+        "error_handling": "Missing try/catch",
+        "performance": "N+1 or missing indexes flagged",
+        "specificity": "Concrete fixes provided, not vague"
+      }
+    },
+    {
+      "id": "code_002",
+      "domain": "code",
+      "name": "Bug Investigation",
+      "difficulty": "hard",
+      "description": "Debug why user authentication is failing intermittently in production",
+      "input": {
+        "error_pattern": "Auth fails 1-2 times per hour randomly, then works",
+        "stack_trace": "JWT validation error: 'token expired'",
+        "context": "JWT expires in 1 hour, refresh token valid for 30 days",
+        "environment": "Multi-region deployment with Redis cache"
+      },
+      "expected_output_criteria": {
+        "root_cause": "Identified race condition or clock skew",
+        "diagnostic_steps": "How to reproduce and verify",
+        "fix": "Concrete code or config change",
+        "verification": "How to test the fix"
+      }
+    },
+    {
+      "id": "content_001",
+      "domain": "content",
+      "name": "Blog Post Outline",
+      "difficulty": "easy",
+      "description": "Create a blog post outline on global hiring best practices",
+      "input": {
+        "audience": "HR directors and people ops managers",
+        "tone": "Educational, practical",
+        "length": "2000 words",
+        "seo_keywords": ["global hiring", "employee onboarding", "payroll compliance"]
+      },
+      "expected_output_criteria": {
+        "structure": "Intro, 4-5 main sections, conclusion",
+        "sections": "Each with 2-3 subsections",
+        "examples": "Real-world scenario examples",
+        "ctas": "Natural tie-ins to Atlas without hard selling",
+        "seo_optimized": "Keywords used naturally"
+      }
+    },
+    {
+      "id": "analytics_001",
+      "domain": "analytics",
+      "name": "Pipeline Analysis",
+      "difficulty": "medium",
+      "description": "Analyze a sales pipeline and identify weak stages",
+      "input": {
+        "pipeline_data": {
+          "stage_1_leads": 150,
+          "stage_2_qualified": 45,
+          "stage_3_proposal": 12,
+          "stage_4_close": 3,
+          "monthly_target": 5
+        },
+        "context": "3-month trend showing declining conversion at stage 2"
+      },
+      "expected_output_criteria": {
+        "conversion_rates": "Calculated per stage",
+        "bottleneck": "Identified stage 2 drop (70% loss)",
+        "root_cause_hypothesis": "Qualification criteria too loose or demo process weak",
+        "recommendations": "Specific actions: tighter qualification, demo improvements"
+      }
+    },
+    {
+      "id": "ops_001",
+      "domain": "ops",
+      "name": "Project Closeout Report",
+      "difficulty": "medium",
+      "description": "Generate a project closeout report for completed GTM campaign",
+      "input": {
+        "project": "Q3 Enterprise ABM Campaign",
+        "duration": "12 weeks",
+        "budget": "$50k",
+        "team": "3 people",
+        "goals": "Launch with 100 targeted accounts, generate 5 qualified meetings"
+      },
+      "expected_output_criteria": {
+        "goals_met": "Quantified results vs. targets",
+        "roi": "Cost per meeting, pipeline generated",
+        "timeline": "On-time/on-budget?",
+        "lessons_learned": "3-5 key takeaways",
+        "recommendations": "Next steps / improvements for similar projects"
+      }
+    },
+    {
+      "id": "productivity_001",
+      "domain": "productivity",
+      "name": "Meeting Notes to Action Items",
+      "difficulty": "easy",
+      "description": "Extract action items and decisions from messy meeting notes",
+      "input": {
+        "notes": "Talked about new feature roadmap. Marketing wants email templates, engineering says 2 weeks, Sarah will check competitor features. Need design review from David. Q4 deadline. Budget not discussed yet. Next meeting Friday.",
+        "participants": ["Sarah", "David", "Engineering Lead", "Marketing"],
+        "context": "Product planning meeting"
+      },
+      "expected_output_criteria": {
+        "action_items": "Clear owner, task, deadline for each",
+        "decisions": "Feature roadmap approved, timeline 2 weeks",
+        "blocking_items": "Design review blocking start",
+        "next_steps": "Friday meeting scheduled, budget discussion pending",
+        "clarity": "No ambiguity, ready to share"
+      }
+    },
+    {
+      "id": "research_001",
+      "domain": "research",
+      "name": "Competitive Intelligence Brief",
+      "difficulty": "medium",
+      "description": "Create a competitive intelligence brief on Deel vs Atlas",
+      "input": {
+        "competitors": ["Deel", "Remote", "Rippling"],
+        "focus_areas": ["pricing", "global coverage", "compliance", "customer support"],
+        "context": "For sales team enablement"
+      },
+      "expected_output_criteria": {
+        "pricing_comparison": "Tiers and positioning vs Deel",
+        "coverage": "Countries served, service level differences",
+        "compliance": "Certifications, audit readiness",
+        "differentiation": "Atlas's unique advantages",
+        "talking_points": "Sales-ready win themes"
+      }
+    },
+    {
+      "id": "integration_001",
+      "domain": "integration",
+      "name": "API Integration Design",
+      "difficulty": "hard",
+      "description": "Design an API integration between Atlas payroll and Salesforce CRM",
+      "input": {
+        "systems": ["Atlas EOR Platform", "Salesforce CRM"],
+        "use_case": "Sync employee data to CRM contacts for sales visibility",
+        "volume": "1000 employees, daily sync",
+        "requirements": ["Real-time updates", "Error handling", "Audit trail"]
+      },
+      "expected_output_criteria": {
+        "architecture": "Clear sync direction and timing",
+        "api_endpoints": "Specific Atlas and SFDC endpoints needed",
+        "error_handling": "Retry logic, failed sync queue",
+        "security": "API auth, data encryption, PII handling",
+        "testing": "Test plan outline"
+      }
+    }
+  ]
+}

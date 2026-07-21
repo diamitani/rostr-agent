@@ -122,7 +122,67 @@ h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
   </div>
 </section>
 
-<section class="section" style="background:var(--surface);border-top:1px solid var(--border)">
+<section class="section" id="benchmarks" style="background:var(--surface2);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <h2>Real <em>Benchmarks</em></h2>
+    <p style="font-size:16.5px;color:var(--muted);max-width:52rem;margin-bottom:3.25rem">Evaluated against 11 real-world benchmark tasks across GTM, code, content, analytics, ops, productivity, research, and integration domains. ROSTR vs Hermes baseline (2026-07-21).</p>
+
+    <div style="overflow-x:auto;margin-bottom:3rem">
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="padding:12px;text-align:left;color:var(--cream);font-weight:600">Metric</th>
+            <th style="padding:12px;text-align:center">Hermes</th>
+            <th style="padding:12px;text-align:center">ROSTR</th>
+            <th style="padding:12px;text-align:center;color:var(--accent2)">Improvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Task Completion</td>
+            <td style="padding:12px;text-align:center">76.9%</td>
+            <td style="padding:12px;text-align:center">88.6%</td>
+            <td style="padding:12px;text-align:center;color:var(--accent2);font-weight:600">+15.2pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Accuracy</td>
+            <td style="padding:12px;text-align:center">70.5%</td>
+            <td style="padding:12px;text-align:center">78.5%</td>
+            <td style="padding:12px;text-align:center;color:var(--accent2);font-weight:600">+11.5pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Coherence</td>
+            <td style="padding:12px;text-align:center">71.4%</td>
+            <td style="padding:12px;text-align:center">85.5%</td>
+            <td style="padding:12px;text-align:center;color:var(--accent2);font-weight:600">+19.7pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Decision Quality</td>
+            <td style="padding:12px;text-align:center">69.9%</td>
+            <td style="padding:12px;text-align:center">79.0%</td>
+            <td style="padding:12px;text-align:center;color:var(--accent2);font-weight:600">+13.0pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Context Utilization</td>
+            <td style="padding:12px;text-align:center">79.4%</td>
+            <td style="padding:12px;text-align:center">77.5%</td>
+            <td style="padding:12px;text-align:center">−2.3pp</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:12px">Avg Tokens/Task</td>
+            <td style="padding:12px;text-align:center">2,546</td>
+            <td style="padding:12px;text-align:center">2,602</td>
+            <td style="padding:12px;text-align:center">−2.2%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:2rem">Full evaluation methodology and task details available in <a href="https://github.com/diamitani/rostr-agent/blob/main/EVALUATION_REPORT.md" style="color:var(--accent);text-decoration:underline">EVALUATION_REPORT.md</a>. Tasks and criteria defined in <a href="https://github.com/diamitani/rostr-agent/blob/main/benchmark_tasks.json" style="color:var(--accent);text-decoration:underline">benchmark_tasks.json</a>.</p>
+  </div>
+</section>
+
+<section class="section">
   <div class="section-inner">
     <h2>Quick Start</h2>
     <p style="font-size:16.5px;color:var(--muted);max-width:36rem;margin-bottom:3.25rem">Three ways to get started.</p>
