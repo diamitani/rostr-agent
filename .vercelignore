@@ -1,0 +1,13 @@
+apps/
+node_modules/
+rostr/__pycache__/
+*.pyc
+venv/
+.venv/
+docker/
+ui-tui/
+hermes/
+hermes_cli/
+gateway/
+agent/
+web/
