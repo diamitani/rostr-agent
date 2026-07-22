@@ -138,12 +138,23 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
 .footer-links a{font-size:12px;color:var(--muted);text-decoration:none}
 .footer-links a:hover{color:var(--text)}
 
+/* Download Cards */
+.download-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;text-align:center;transition:all .2s var(--ease)}
+.download-card:hover{border-color:var(--cyan);transform:translateY(-3px);box-shadow:0 8px 30px rgba(6,182,212,.1)}
+
+/* Chat loading animation */
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+
 /* Responsive */
 @media(max-width:900px){
   .features-grid,.pricing,.steps{grid-template-columns:1fr}
   .dash-body{grid-template-columns:1fr}
   .dash-sidebar{display:none}
   .hero h1{font-size:36px}
+  #download .section-inner > div:first-of-type{grid-template-columns:1fr!important}
 }
 @media(max-width:640px){
   nav{padding:0 1rem}
@@ -160,11 +171,11 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
     <a href="#" class="nav-logo">ROSTR<span>.</span></a>
     <div class="nav-links">
       <a href="#features">Features</a>
-      <a href="#integrations">Integrations</a>
+      <a href="#try-it">Try It</a>
+      <a href="#download">Download</a>
       <a href="#pricing">Pricing</a>
-      <a href="#benchmarks">Benchmarks</a>
       <a href="https://github.com/diamitani/rostr-agent" target="_blank">GitHub</a>
-      <a href="https://app.rostragent.com" class="btn-nav">Launch App</a>
+      <a href="#try-it" class="btn-nav">Try Now</a>
     </div>
   </div>
 </nav>
@@ -174,8 +185,8 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
   <h1>AI Agents That<br><span>Actually Work.</span></h1>
   <p class="hero-sub">Production-grade agent platform with smart routing, persistent memory, and 1,000+ integrations. 9 LLM providers. Bring your own keys. Ship in minutes.</p>
   <div class="hero-ctas">
-    <a href="https://app.rostragent.com" class="btn-lg btn-primary">Launch Dashboard →</a>
-    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Self-Host (Free)</a>
+    <a href="#try-it" class="btn-lg btn-primary">Try It Now →</a>
+    <a href="#download" class="btn-lg btn-secondary">Download Desktop App</a>
   </div>
   <div class="hero-proof">
     <div class="proof-item"><span class="dot"></span> 85% task completion rate</div>
@@ -269,7 +280,7 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
       </div>
       <div class="feature">
         <div class="feature-icon">🔗</div>
-        <h3>100+ Integrations</h3>
+        <h3>1,048 Integrations</h3>
         <p>Composio-powered: Telegram, WhatsApp, Slack, Gmail, HubSpot, Salesforce, Notion, GitHub, Calendar, and 90+ more. Connect in one click.</p>
       </div>
       <div class="feature">
@@ -435,7 +446,7 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
           <li>Everything in Self-Hosted</li>
           <li>Managed AWS infrastructure</li>
           <li>Web dashboard (app.rostragent.com)</li>
-          <li>100+ Composio integrations</li>
+          <li>1,048 Composio integrations</li>
           <li>Persistent Hub storage</li>
           <li>Priority support</li>
           <li>$0.10/1K executions after 1000 free</li>
@@ -460,13 +471,96 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
   </div>
 </section>
 
+<!-- Try It — Working Chat -->
+<section class="section" id="try-it" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Live Demo</div>
+    <h2>Try ROSTR right now.</h2>
+    <p class="section-desc">Enter your OpenAI or Anthropic API key below. Messages go directly from your browser to the provider — we never see or store your key.</p>
+
+    <div id="app-container" style="margin-top:2rem;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface);max-width:800px">
+      <!-- Key Setup -->
+      <div id="key-setup" style="padding:32px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end">
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:6px">Provider</label>
+            <select id="provider-select" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;cursor:pointer">
+              <option value="openai">OpenAI (GPT-4o)</option>
+              <option value="anthropic">Anthropic (Claude Sonnet)</option>
+            </select>
+          </div>
+          <div style="flex:2;min-width:280px">
+            <label style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:6px">API Key</label>
+            <input id="api-key-input" type="password" placeholder="sk-... or sk-ant-..." style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;font-family:var(--mono)">
+          </div>
+          <button onclick="startChat()" style="padding:10px 20px;background:var(--cyan);border:none;border-radius:8px;color:#000;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap">Connect →</button>
+        </div>
+        <p style="font-size:11px;color:var(--dim);margin-top:12px">Your key is stored in browser memory only (sessionStorage). Never sent to our servers. <a href="https://github.com/diamitani/rostr-agent" style="color:var(--cyan)">Verify source →</a></p>
+      </div>
+
+      <!-- Chat Interface (hidden until key entered) -->
+      <div id="chat-ui" style="display:none">
+        <div style="height:36px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+          <span style="font-size:11px;color:var(--muted)" id="status-text">Connected</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--dim)" id="model-label">gpt-4o</span>
+        </div>
+        <div id="chat-messages" style="min-height:300px;max-height:450px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <div class="dash-msg ai">Hello! I'm ROSTR — your AI agent with PAL-enhanced prompting. Ask me anything, or try: "Research a company called Stripe and draft a cold outreach email."</div>
+        </div>
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
+          <input id="chat-input" type="text" placeholder="Ask ROSTR anything..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')sendMessage()">
+          <button onclick="sendMessage()" style="background:var(--cyan);border:none;border-radius:8px;padding:12px 20px;color:#000;font-weight:600;font-size:13px;cursor:pointer">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Download -->
+<section class="section" id="download" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Desktop App</div>
+    <h2>Download ROSTR Agent.</h2>
+    <p class="section-desc">Full agent platform on your desktop. Local models via Ollama (free), or bring your own cloud keys. No internet required for local mode.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:2.5rem;max-width:700px">
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🍎</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">macOS</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">Apple Silicon + Intel</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download .dmg →</div>
+      </a>
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🪟</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Windows</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">Windows 10+</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download .exe →</div>
+      </a>
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🐧</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Linux</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">AppImage / .deb</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download →</div>
+      </a>
+    </div>
+
+    <div style="margin-top:2rem;padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px;max-width:700px">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Or install via CLI:</div>
+      <code style="font-family:var(--mono);font-size:13px;color:var(--cyan);display:block;padding:8px 0">git clone https://github.com/diamitani/rostr-agent.git && cd rostr-agent && pip install -e .</code>
+    </div>
+
+    <p style="font-size:12px;color:var(--dim);margin-top:16px">Desktop app requires Python 3.11+. Local models: install <a href="https://ollama.ai" style="color:var(--cyan)">Ollama</a> and run <code style="font-family:var(--mono);font-size:11px;color:var(--cyan)">ollama pull qwen2.5-coder:14b</code></p>
+  </div>
+</section>
+
 <!-- CTA -->
 <section class="cta" id="cta">
   <h2>Start building in 60 seconds.</h2>
-  <p class="cta-desc">No credit card required. Add your API key and go. Self-host free forever, or try cloud pro.</p>
+  <p class="cta-desc">No credit card. No account needed. Enter your API key above and go — or self-host free forever.</p>
   <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
-    <a href="https://app.rostragent.com" class="btn-lg btn-primary">Launch Dashboard →</a>
-    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Self-Host (Free)</a>
+    <a href="#try-it" class="btn-lg btn-primary">Try It Now →</a>
+    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Star on GitHub</a>
   </div>
 </section>
 
@@ -482,5 +576,126 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
   </div>
 </footer>
 
+<script>
+let apiKey = '';
+let provider = 'openai';
+let conversationHistory = [];
+
+const SYSTEM_PROMPT = `You are ROSTR Agent — a production AI assistant with PAL (Prompt Abstraction Layer) that enhances every user request before executing. You help with research, outreach drafting, data analysis, and automation tasks. Be concise, actionable, and specific. When the user asks you to research a company, provide real insights. When they ask for outreach, write compelling copy. Always think step-by-step internally but output clean results.`;
+
+function startChat() {
+  apiKey = document.getElementById('api-key-input').value.trim();
+  provider = document.getElementById('provider-select').value;
+
+  if (!apiKey) {
+    document.getElementById('api-key-input').style.borderColor = 'var(--red)';
+    return;
+  }
+
+  sessionStorage.setItem('rostr_key', apiKey);
+  sessionStorage.setItem('rostr_provider', provider);
+
+  document.getElementById('key-setup').style.display = 'none';
+  document.getElementById('chat-ui').style.display = 'block';
+  document.getElementById('model-label').textContent = provider === 'openai' ? 'gpt-4o' : 'claude-sonnet-4-20250514';
+  document.getElementById('chat-input').focus();
+
+  conversationHistory = [{ role: 'system', content: SYSTEM_PROMPT }];
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  appendMessage(msg, 'user');
+  conversationHistory.push({ role: 'user', content: msg });
+
+  const typingEl = showTyping();
+
+  try {
+    let response;
+    if (provider === 'openai') {
+      response = await callOpenAI(conversationHistory);
+    } else {
+      response = await callAnthropic(conversationHistory);
+    }
+
+    typingEl.remove();
+    appendMessage(response, 'ai');
+    conversationHistory.push({ role: 'assistant', content: response });
+  } catch (err) {
+    typingEl.remove();
+    appendMessage('Error: ' + (err.message || 'Request failed. Check your API key.'), 'ai');
+  }
+}
+
+async function callOpenAI(messages) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: 'gpt-4o', messages: messages, max_tokens: 1024 })
+  });
+  if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+async function callAnthropic(messages) {
+  const sysMsg = messages.find(m => m.role === 'system')?.content || '';
+  const userMsgs = messages.filter(m => m.role !== 'system');
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      system: sysMsg,
+      messages: userMsgs
+    })
+  });
+  if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+function appendMessage(text, type) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'dash-msg ' + type;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'dash-msg ai';
+  div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+// Restore session
+(function() {
+  const savedKey = sessionStorage.getItem('rostr_key');
+  const savedProvider = sessionStorage.getItem('rostr_provider');
+  if (savedKey) {
+    apiKey = savedKey;
+    provider = savedProvider || 'openai';
+    document.getElementById('api-key-input').value = savedKey;
+    document.getElementById('provider-select').value = provider;
+  }
+})();
+</script>
 </body>
 </html>
