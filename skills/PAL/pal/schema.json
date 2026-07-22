@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Intent": {
+      "type": "object",
+      "properties": {
+        "goal": {
+          "type": "string",
+          "description": "The actual underlying goal (not literal words)"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["code", "design", "content", "sales", "ops", "idea", "debug", "deploy"],
+          "description": "Problem domain"
+        },
+        "subject": {
+          "type": "string",
+          "description": "What thing is the action being applied to"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Limitations (no fix, report only, just frontend, etc.)"
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["screenshot", "file", "pr", "analysis", "draft", "code", "plan", "report"],
+          "description": "What does done look like"
+        }
+      },
+      "required": ["goal", "domain", "subject"]
+    },
+    "Context": {
+      "type": "object",
+      "properties": {
+        "claude_md": {
+          "type": "string",
+          "description": "Content of CLAUDE.md (project instructions)"
+        },
+        "user_prefs": {
+          "type": "object",
+          "description": "User preferences (preferred models, tools, style)"
+        },
+        "codebase_summary": {
+          "type": "string",
+          "description": "Brief codebase overview"
+        },
+        "project_memory": {
+          "type": "object",
+          "description": "Session or project memory (what happened before)"
+        }
+      }
+    },
+    "EnhancedPrompt": {
+      "type": "object",
+      "properties": {
+        "rewritten": {
+          "type": "string",
+          "description": "Rewritten request with precision and context"
+        },
+        "subtasks": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Broken into sub-steps if multi-step"
+        },
+        "knowledge_injected": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "What context was added"
+        }
+      },
+      "required": ["rewritten"]
+    },
+    "AgentManifest": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": ["code", "design", "content", "sales", "ops", "idea", "debug", "deploy"]
+        },
+        "model": {
+          "type": "string",
+          "enum": ["claude-opus", "claude-sonnet", "claude-haiku", "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo", "ollama-local"],
+          "description": "LLM to route to"
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Model temperature parameter"
+        },
+        "tools": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "MCPs/skills to enable (e.g., 'firecrawl-scrape', 'design-html')"
+        },
+        "behavior": {
+          "type": "string",
+          "enum": ["auto-approve", "ask", "report-only", "guard"],
+          "description": "Execution style"
+        },
+        "enhanced_prompt": {
+          "type": "string",
+          "description": "Context-injected rewritten request"
+        },
+        "routing_reason": {
+          "type": "string",
+          "description": "Explanation of domain/model/tools choice"
+        },
+        "estimated_complexity": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Complexity estimate"
+        }
+      },
+      "required": ["domain", "model", "temperature", "tools", "behavior", "enhanced_prompt", "routing_reason"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "raw_request": {
+          "type": "string",
+          "description": "User's natural language request"
+        },
+        "context_override": {
+          "$ref": "#/definitions/Context",
+          "description": "Optional context to inject (will be merged with auto-detected)"
+        }
+      },
+      "required": ["raw_request"]
+    },
+    "output": {
+      "$ref": "#/definitions/AgentManifest"
+    }
+  }
+}

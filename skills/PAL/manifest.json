@@ -1,0 +1,49 @@
+{
+  "name": "PAL",
+  "version": "1.0.0",
+  "title": "Prompt Abstraction Layer",
+  "description": "5-stage compilation pipeline that transforms natural language requests into typed AgentManifest JSON with domain routing, model selection, and tool enablement.",
+  "author": "Patrick Diamitani",
+  "license": "MIT",
+  "entrypoint": "pal/main.py",
+  "schema": "pal/schema.json",
+  "stages": [
+    "Intent Extraction",
+    "Context Injection",
+    "Prompt Enhancement",
+    "Compilation",
+    "Routing"
+  ],
+  "inputs": {
+    "raw_request": "Natural language user request (string)",
+    "context_override": "Optional context overrides (object)"
+  },
+  "outputs": {
+    "AgentManifest": {
+      "domain": "code|design|content|sales|ops|idea|debug|deploy",
+      "model": "claude-opus|claude-sonnet|claude-haiku|gpt-4|ollama-local",
+      "temperature": "0-1",
+      "tools": "Array of MCPs/skills",
+      "behavior": "auto-approve|ask|report-only|guard",
+      "enhanced_prompt": "Context-injected rewritten request",
+      "routing_reason": "Explanation of routing decision"
+    }
+  },
+  "dependencies": [
+    "anthropic>=1.40",
+    "openai>=1.50",
+    "requests>=2.30",
+    "pydantic>=2.0",
+    "pyyaml>=6.0"
+  ],
+  "tags": [
+    "agent",
+    "routing",
+    "nlp",
+    "intent-extraction",
+    "multi-llm",
+    "orchestration"
+  ],
+  "usage": "pal = PAL(claude_md_path='.claude/CLAUDE.md', memory_path='.claude/memory.md'); manifest = pal.compile('your request here'); print(json.dumps(manifest, indent=2))",
+  "test_command": "python tests/test_pal.py"
+}

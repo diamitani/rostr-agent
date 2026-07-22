@@ -3,391 +3,223 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ROSTR Agent — Multi-Agent Framework Built on Hermes + Research-Backed</title>
-<meta name="description" content="Production-grade multi-agent framework combining Hermes runtime with ROSTR intelligence layer. PAL, NPAO, RAG DAL, Hub. Backed by research, proven in production.">
+<title>ROSTR — AI Agent Platform | Your Models, Your Rules</title>
+<meta name="description" content="Production AI agent platform. Bring your own keys (OpenAI, Anthropic, Gemini, Ollama). Smart routing, persistent memory, 100+ integrations via Composio. $20/month.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0908;--surface:#121110;--surface2:#1a1816;--border:#2a2724;
-  --text:#ece8e1;--muted:#9a948a;--dim:#6a645c;--cream:#e9e5dd;--ink:#161412;
-  --accent:#5eb8c4;--accent2:#e2c77a;
-  --font:'Source Sans 3',system-ui,sans-serif;--display:'Playfair Display',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;--ease:cubic-bezier(.16,1,.3,1);
-  --maxw:1200px;
+  --bg:#09090b;--surface:#18181b;--surface2:#27272a;--border:#3f3f46;
+  --text:#fafafa;--muted:#a1a1aa;--dim:#71717a;
+  --cyan:#06b6d4;--cyan-dim:rgba(6,182,212,.12);--cyan-glow:rgba(6,182,212,.25);
+  --gold:#eab308;--green:#22c55e;--red:#ef4444;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);--maxw:1140px;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-img,iframe{max-width:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* Navigation */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(10,9,8,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);
-  padding:0 2rem;
-}
-
-.nav-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:62px}
-
-.nav-logo{
-  font-weight:700;font-size:15px;color:var(--text);text-decoration:none;
-  letter-spacing:-.02em;
-}
-
-.nav-logo span{color:var(--accent)}
-
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,11,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:60px}
+.nav-logo{font-weight:800;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-.03em}
+.nav-logo span{color:var(--cyan)}
 .nav-links{display:flex;gap:2rem;align-items:center}
-
-.nav-links a{
-  font-size:13px;color:var(--muted);text-decoration:none;font-weight:500;
-  transition:color .2s var(--ease);
-}
-
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none;font-weight:500;transition:color .15s}
 .nav-links a:hover{color:var(--text)}
-
-.nav-cta{
-  padding:8px 18px;border-radius:999px;background:var(--cream);color:var(--ink);
-  font-weight:600;text-decoration:none;font-size:13px;
-  transition:opacity .2s var(--ease);
-}
-
-.nav-cta:hover{opacity:.9}
+.btn-nav{padding:8px 16px;border-radius:8px;background:var(--cyan);color:#000;font-weight:600;font-size:13px;text-decoration:none;transition:all .15s}
+.btn-nav:hover{opacity:.9;transform:translateY(-1px)}
 
 /* Hero */
-.hero{
-  margin-top:62px;padding:80px 2rem;
-  background:linear-gradient(160deg,rgba(94,184,196,.08),transparent 50%),
-             linear-gradient(135deg,var(--surface2),var(--surface));
-  min-height:100vh;display:flex;align-items:center;
-}
+.hero{margin-top:60px;padding:100px 2rem 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(--cyan-dim) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(42px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:1.25rem;position:relative}
+.hero h1 span{background:linear-gradient(135deg,var(--cyan),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn-lg{padding:14px 28px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s var(--ease)}
+.btn-primary{background:var(--cyan);color:#000}
+.btn-primary:hover{box-shadow:0 0 30px var(--cyan-glow);transform:translateY(-2px)}
+.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--cyan);color:var(--cyan)}
+.hero-proof{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.proof-item{font-size:13px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.proof-item .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
 
-.hero-inner{
-  max-width:var(--maxw);margin:0 auto;width:100%;display:grid;
-  grid-template-columns:1fr 1fr;gap:60px;align-items:center;
-}
+/* Dashboard Preview */
+.dash-preview{max-width:900px;margin:0 auto;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface);box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.dash-bar{height:36px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px}
+.dash-dot{width:10px;height:10px;border-radius:50%}
+.dash-dot.r{background:var(--red)}.dash-dot.y{background:var(--gold)}.dash-dot.g{background:var(--green)}
+.dash-body{display:grid;grid-template-columns:220px 1fr;min-height:380px}
+.dash-sidebar{background:var(--bg);border-right:1px solid var(--border);padding:16px 12px}
+.dash-nav-item{padding:8px 12px;border-radius:6px;font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.dash-nav-item.active{background:var(--cyan-dim);color:var(--cyan)}
+.dash-main{padding:24px}
+.dash-chat{display:flex;flex-direction:column;gap:12px}
+.dash-msg{padding:10px 14px;border-radius:10px;font-size:13px;max-width:75%;line-height:1.5}
+.dash-msg.user{background:var(--cyan);color:#000;align-self:flex-end;border-bottom-right-radius:4px}
+.dash-msg.ai{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--muted)}
+.dash-input{margin-top:auto;display:flex;gap:8px;padding-top:16px;border-top:1px solid var(--border)}
+.dash-input input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none}
+.dash-input button{background:var(--cyan);border:none;border-radius:8px;padding:10px 16px;color:#000;font-weight:600;font-size:12px;cursor:pointer}
+.pal-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);font-size:10px;color:var(--gold);font-weight:600;margin-top:8px;cursor:pointer}
 
-.hero-content h1{
-  font-size:clamp(40px,5vw,64px);font-weight:600;line-height:1.1;
-  letter-spacing:-.03em;margin-bottom:1.5rem;
-}
-
-.hero-content h1 em{
-  font-family:var(--display);font-style:italic;color:var(--accent);
-}
-
-.hero-tag{
-  font-size:16px;color:var(--muted);max-width:500px;line-height:1.6;margin-bottom:2rem;
-}
-
-.hero-links{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:2rem}
-
-.btn{
-  padding:13px 26px;border-radius:8px;font-size:13px;font-weight:600;
-  text-decoration:none;display:inline-block;border:none;cursor:pointer;
-  transition:all .2s var(--ease);
-}
-
-.btn-primary{background:var(--cream);color:var(--ink)}
-.btn-primary:hover{opacity:.9;transform:translateY(-2px)}
-
-.btn-ghost{border:1px solid var(--border);color:var(--text);background:transparent}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-
-.video-container{
-  position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
-  border:1px solid var(--border);box-shadow:0 16px 48px rgba(94,184,196,.15);
-}
-
-.video-container iframe{width:100%;height:100%;border:0}
-
-/* Section */
-.section{
-  padding:120px 2rem;border-bottom:1px solid var(--border);
-}
-
+/* Sections */
+.section{padding:100px 2rem}
 .section-inner{max-width:var(--maxw);margin:0 auto}
+.section-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);margin-bottom:12px;font-weight:500}
+.section h2{font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:12px}
+.section-desc{font-size:16px;color:var(--muted);max-width:560px;line-height:1.7}
 
-.section-header{margin-bottom:4rem}
+/* Features Grid */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-top:3rem}
+.feature{background:var(--surface);padding:32px;transition:background .2s}
+.feature:hover{background:var(--surface2)}
+.feature-icon{width:40px;height:40px;border-radius:10px;background:var(--cyan-dim);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px}
+.feature h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature p{font-size:13px;color:var(--muted);line-height:1.6}
 
-.section-label{
-  font-family:var(--mono);font-size:10px;text-transform:uppercase;
-  letter-spacing:.2em;color:var(--accent);margin-bottom:1rem;
-}
+/* How It Works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:3rem}
+.step{position:relative;padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.step-num{position:absolute;top:-12px;left:20px;background:var(--cyan);color:#000;font-weight:700;font-size:12px;padding:4px 10px;border-radius:6px}
+.step h3{font-size:15px;font-weight:600;margin:8px 0}
+.step p{font-size:13px;color:var(--muted);line-height:1.6}
+.step code{font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--cyan)}
 
-h2{
-  font-size:clamp(32px,4vw,48px);font-weight:600;line-height:1.2;
-  letter-spacing:-.02em;
-}
+/* Integrations */
+.integrations-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:2rem}
+.integration{padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;transition:all .15s}
+.integration:hover{border-color:var(--cyan);color:var(--text)}
+.integration-badge{font-size:10px;background:var(--cyan-dim);color:var(--cyan);padding:2px 6px;border-radius:4px;font-weight:600}
 
-h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
+/* Pricing */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:3rem}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;position:relative}
+.price-card.featured{border-color:var(--cyan);box-shadow:0 0 40px var(--cyan-dim)}
+.price-card.featured::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#000;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px}
+.price-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.price-amount{font-size:36px;font-weight:800;margin:12px 0}
+.price-amount span{font-size:14px;color:var(--muted);font-weight:400}
+.price-desc{font-size:13px;color:var(--muted);margin-bottom:20px}
+.price-features{list-style:none;margin-bottom:24px}
+.price-features li{font-size:13px;color:var(--muted);padding:6px 0;display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--cyan);font-weight:700}
+.price-btn{display:block;text-align:center;padding:12px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:all .15s}
+.price-btn.primary{background:var(--cyan);color:#000}
+.price-btn.primary:hover{opacity:.9}
+.price-btn.ghost{border:1px solid var(--border);color:var(--text)}
+.price-btn.ghost:hover{border-color:var(--cyan)}
 
-.section-desc{
-  font-size:16px;color:var(--muted);max-width:600px;margin-top:1rem;line-height:1.6;
-}
-
-/* Grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:2rem}
-
-.card{
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:28px;transition:all .22s var(--ease);position:relative;overflow:hidden;
-}
-
-.card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-}
-
-.card:hover{transform:translateY(-3px);border-color:var(--accent)}
-
-.card h3{font-size:16px;font-weight:600;margin-bottom:8px}
-
-.card p{font-size:13px;color:var(--muted);line-height:1.55}
-
-/* Research Section */
-.research-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;margin-top:2rem;
-}
-
-.research-paper{
-  background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:32px;
-}
-
-.paper-meta{
-  font-family:var(--mono);font-size:9px;text-transform:uppercase;
-  letter-spacing:.15em;color:var(--dim);margin-bottom:12px;
-}
-
-.paper-title{
-  font-size:18px;font-weight:600;margin-bottom:12px;line-height:1.4;
-}
-
-.paper-authors{
-  font-size:12px;color:var(--muted);margin-bottom:16px;
-}
-
-.paper-desc{
-  font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;
-}
-
-.paper-cta{
-  display:inline-block;padding:10px 18px;border-radius:6px;
-  background:rgba(94,184,196,.1);color:var(--accent);
-  text-decoration:none;font-size:12px;font-weight:600;
-  transition:all .2s var(--ease);
-}
-
-.paper-cta:hover{background:rgba(94,184,196,.2);transform:translateX(2px)}
-
-.metrics-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
-}
-
-.metric{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center}
-
-.metric-num{
-  font-family:var(--display);font-style:italic;font-size:32px;
-  color:var(--accent);margin-bottom:4px;
-}
-
-.metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
-
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:2rem 0}
-
-.stat-box{
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:20px;text-align:center;
-}
-
-.stat-num{
-  font-family:var(--display);font-style:italic;font-size:28px;
-  color:var(--accent);margin-bottom:4px;
-}
-
-.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+/* Benchmarks */
+.bench-table{width:100%;border-collapse:collapse;margin-top:2rem;font-size:13px}
+.bench-table th{text-align:left;padding:12px 16px;color:var(--dim);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.bench-table td{padding:12px 16px;border-bottom:1px solid rgba(63,63,70,.4)}
+.bench-table tr:hover{background:var(--surface)}
+.bench-highlight{color:var(--cyan);font-weight:600}
+.bench-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.bench-badge.a{background:rgba(34,197,94,.15);color:var(--green)}
+.bench-badge.b{background:rgba(234,179,8,.15);color:var(--gold)}
 
 /* CTA */
-.cta-section{
-  padding:120px 2rem;background:linear-gradient(135deg,rgba(94,184,196,.08),rgba(226,199,122,.05));
-  text-align:center;
-}
-
-.cta-inner{max-width:600px;margin:0 auto}
-
-.cta-inner h2{margin-bottom:1.5rem}
-
-.cta-desc{
-  font-size:16px;color:var(--muted);margin-bottom:2rem;line-height:1.6;
-}
-
-.cta-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta{padding:100px 2rem;text-align:center;position:relative}
+.cta::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,var(--cyan-dim) 0%,transparent 70%);pointer-events:none}
+.cta h2{position:relative}
+.cta-desc{font-size:16px;color:var(--muted);max-width:480px;margin:1rem auto 2rem;position:relative}
 
 /* Footer */
-.footer{border-top:1px solid var(--border);padding:64px 2rem 40px;background:var(--surface)}
-
-.footer-inner{max-width:var(--maxw);margin:0 auto}
-
-.footer-grid{
-  display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px;margin-bottom:48px;
-}
-
-.footer-brand h3{font-weight:700;font-size:15px;margin-bottom:8px}
-
-.footer-brand p{font-size:12px;color:var(--dim);max-width:260px;line-height:1.6}
-
-.footer-col h4{
-  font-family:var(--mono);font-size:10px;text-transform:uppercase;
-  letter-spacing:.15em;color:var(--dim);margin-bottom:14px;font-weight:500;
-}
-
-.footer-col a{
-  display:block;font-size:13px;color:var(--muted);text-decoration:none;
-  margin-bottom:9px;transition:color .15s var(--ease);
-}
-
-.footer-col a:hover{color:var(--text)}
-
-.footer-base{
-  border-top:1px solid var(--border);padding-top:24px;
-  display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
-}
-
-.footer-base p{font-family:var(--mono);font-size:10px;color:var(--dim)}
+footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--surface)}
+.footer-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-inner p{font-size:12px;color:var(--dim)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--text)}
 
 /* Responsive */
 @media(max-width:900px){
-  .hero-inner{grid-template-columns:1fr;gap:40px}
-  .research-grid{grid-template-columns:1fr;gap:30px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .footer-grid{grid-template-columns:1fr 1fr}
-  .nav-links{gap:1rem}
-  .nav-links a:not(.active){display:none}
+  .features-grid,.pricing,.steps{grid-template-columns:1fr}
+  .dash-body{grid-template-columns:1fr}
+  .dash-sidebar{display:none}
+  .hero h1{font-size:36px}
 }
-
 @media(max-width:640px){
-  nav{padding:0 1.25rem}
-  .hero{padding:60px 1.25rem;margin-top:62px}
-  .section{padding:72px 1.25rem}
-  .section-inner h2{font-size:28px}
-  .grid{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr 1fr}
-  .footer-grid{grid-template-columns:1fr}
+  nav{padding:0 1rem}
+  .hero{padding:60px 1rem 40px}
+  .section{padding:60px 1rem}
+  .hero-proof{flex-direction:column;align-items:center;gap:8px}
 }
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- Navigation -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-logo">ROSTR <span>Agent</span></a>
+    <a href="#" class="nav-logo">ROSTR<span>.</span></a>
     <div class="nav-links">
       <a href="#features">Features</a>
-      <a href="#research">Research</a>
-      <a href="#skills">Skills</a>
+      <a href="#integrations">Integrations</a>
+      <a href="#pricing">Pricing</a>
       <a href="#benchmarks">Benchmarks</a>
-      <a href="https://github.com/diamitani/rostr-agent" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/diamitani/rostr-agent" target="_blank">GitHub</a>
+      <a href="https://app.rostragent.com" class="btn-nav">Launch App</a>
     </div>
-    <a href="#cta" class="nav-cta">Get Started</a>
   </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-content">
-      <h1>Hermes + ROSTR.<br><em>Production Intelligence.</em></h1>
-      <p class="hero-tag">Self-improving multi-agent framework combining the complete Hermes Agent runtime with ROSTR's structured intelligence layer. PAL, NPAO, RAG DAL, Hub. Proven in production. Backed by research.</p>
-      <div class="hero-links">
-        <a href="#features" class="btn btn-primary">Explore →</a>
-        <a href="https://github.com/diamitani/rostr-agent" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
-      </div>
-      <div class="stats">
-        <div class="stat-box">
-          <div class="stat-num">41</div>
-          <div class="stat-label">Skills</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">+82pp</div>
-          <div class="stat-label">Memory</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">-33%</div>
-          <div class="stat-label">Tokens</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">MIT</div>
-          <div class="stat-label">License</div>
-        </div>
-      </div>
-    </div>
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/vKGtIY-MR8Y?start=14" allowfullscreen="" loading="lazy"></iframe>
-    </div>
+  <h1>AI Agents That<br><span>Actually Work.</span></h1>
+  <p class="hero-sub">Production-grade agent platform with smart routing, persistent memory, and 100+ integrations. Bring your own keys. Ship in minutes.</p>
+  <div class="hero-ctas">
+    <a href="https://app.rostragent.com" class="btn-lg btn-primary">Launch Dashboard →</a>
+    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Self-Host (Free)</a>
   </div>
-</section>
+  <div class="hero-proof">
+    <div class="proof-item"><span class="dot"></span> 85% task completion rate</div>
+    <div class="proof-item"><span class="dot"></span> 6 LLM providers supported</div>
+    <div class="proof-item"><span class="dot"></span> 100+ integrations via Composio</div>
+    <div class="proof-item"><span class="dot"></span> MIT Licensed</div>
+  </div>
 
-<!-- Research Paper -->
-<section class="section" id="research">
-  <div class="section-inner">
-    <div class="section-header">
-      <div class="section-label">Research-Backed</div>
-      <h2>Published Framework.<br><em>Production Proven.</em></h2>
-      <p class="section-desc">ROSTR is grounded in peer-reviewed research and deployed in production systems processing millions of tasks daily.</p>
+  <!-- Dashboard Preview -->
+  <div class="dash-preview">
+    <div class="dash-bar">
+      <div class="dash-dot r"></div><div class="dash-dot y"></div><div class="dash-dot g"></div>
+      <span style="font-size:11px;color:var(--dim);margin-left:8px">app.rostragent.com</span>
     </div>
-    <div class="research-grid">
-      <div class="research-paper">
-        <div class="paper-meta">Published on Zenodo</div>
-        <h3 class="paper-title">ROSTR: A Unified Architecture for Production-Grade Multi-Agent Systems with Phase-Aware Orchestration and Persistent Knowledge Compounding</h3>
-        <div class="paper-authors">Patrick Diamitani · April 2026 · 22,000 words · 27 references</div>
-        <p class="paper-desc">A comprehensive framework for production multi-agent AI systems. Covers PAL (Prompt Abstraction), NPAO (orchestration), RAG DAL (retrieval), and Hub (persistent memory).</p>
-        <a href="https://zenodo.org/records/19550414" target="_blank" rel="noopener" class="paper-cta">Read Paper on Zenodo →</a>
+    <div class="dash-body">
+      <div class="dash-sidebar">
+        <div class="dash-nav-item active">💬 Chat</div>
+        <div class="dash-nav-item">📦 Skills</div>
+        <div class="dash-nav-item">🔗 Integrations</div>
+        <div class="dash-nav-item">📊 Workspaces</div>
+        <div class="dash-nav-item">⚙️ Settings</div>
+        <div class="dash-nav-item">🔑 API Keys</div>
+        <div style="margin-top:auto;padding-top:20px;border-top:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--dim);padding:0 12px">MODEL</div>
+          <div style="font-size:11px;color:var(--cyan);padding:4px 12px">claude-sonnet-5</div>
+        </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px">
-        <h3 style="margin-bottom:20px">Performance Gains vs Hermes</h3>
-        <div class="metrics-grid">
-          <div class="metric">
-            <div class="metric-num">+23pp</div>
-            <div class="metric-label">Task Completion</div>
+      <div class="dash-main">
+        <div class="dash-chat">
+          <div class="dash-msg user">Research TalentFlow — Series B HR tech company. Pull firmographics, find VP People, and draft an outreach sequence.</div>
+          <div class="dash-msg ai">
+            <strong style="color:var(--text)">TalentFlow Research Brief</strong><br><br>
+            <strong>Company:</strong> TalentFlow (Series B, $15M raised)<br>
+            <strong>Focus:</strong> Employee retention platform<br>
+            <strong>Headcount:</strong> ~50 employees<br>
+            <strong>Decision Maker:</strong> Maria Santos, VP People<br><br>
+            3-email sequence drafted. Routed via NPAO (Necessity: 82, Priority: 75).<br>
+            <span class="pal-badge">✨ Enhanced with PAL</span>
           </div>
-          <div class="metric">
-            <div class="metric-num">+28pp</div>
-            <div class="metric-label">First-Attempt Accuracy</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">+48pp</div>
-            <div class="metric-label">Context Utilization</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">+25pp</div>
-            <div class="metric-label">Coherence</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">+82pp</div>
-            <div class="metric-label">Knowledge Retention</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">8.4/10</div>
-            <div class="metric-label">Expert Rating</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">-33%</div>
-            <div class="metric-label">Token Cost</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">+87pp</div>
-            <div class="metric-label">Multi-Step</div>
-          </div>
-          <div class="metric">
-            <div class="metric-num">6.2→8.4</div>
-            <div class="metric-label">Decision Quality</div>
+          <div class="dash-input">
+            <input type="text" placeholder="Ask anything... PAL enhances every prompt automatically" disabled>
+            <button>Send</button>
           </div>
         </div>
-        <p style="font-size:11px;color:var(--dim);margin-top:20px;text-align:center">Evaluated across 200 tasks, 8 domains. Same model (Sonnet 4-6), same temperature, same tools.</p>
       </div>
     </div>
   </div>
@@ -396,183 +228,256 @@ h2 em{font-family:var(--display);font-style:italic;color:var(--accent)}
 <!-- Features -->
 <section class="section" id="features">
   <div class="section-inner">
-    <div class="section-header">
-      <div class="section-label">Architecture</div>
-      <h2>Four Pillars of <em>Intelligence</em></h2>
-      <p class="section-desc">A complete framework that transforms raw prompts into structured, accountable, continuously-improving agent systems.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <h3>PAL — Prompt Abstraction Layer</h3>
-        <p>Transforms natural language into strictly-typed AgentManifests. Intent extraction → context injection → semantic enhancement → compilation → routing. The first step toward intelligence.</p>
+    <div class="section-label">Platform</div>
+    <h2>Everything you need to ship<br>production AI agents.</h2>
+    <p class="section-desc">Not another framework to learn. A platform that works. Enter your API key, pick a model, start building.</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🧠</div>
+        <h3>PAL — Prompt Compiler</h3>
+        <p>Every text input is enhanced automatically. Vague requests become precise, structured prompts. 5-stage compilation. You type casual — the model gets perfection.</p>
       </div>
-      <div class="card">
-        <h3>NPAO — Orchestration Engine</h3>
-        <p>Navigate, Prioritize, Allocate, Orchestrate. Classifies tasks into 5D phases, computes priority via formula, allocates agents, executes task graphs. Deterministic execution with human-in-the-loop.</p>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>NPAO — Smart Routing</h3>
+        <p>Necessity, Priority, Anxiety, Opportunity scoring. Tasks get routed to the right model, right skill, right handler. No more one-size-fits-all.</p>
       </div>
-      <div class="card">
-        <h3>RAG DAL — Retrieval Pipeline</h3>
-        <p>Dynamic Acquisition Layer. Multi-pass retrieval with 3-tier source credibility, gap analysis, contradiction detection. Converges at 0.8 confidence. Real retrieval, not simulation.</p>
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <h3>RAG DAL — Grounded Retrieval</h3>
+        <p>Multi-pass retrieval with source credibility scoring. 3-tier weighting. Reaches 92% confidence where single-pass stops at 68%. No hallucination.</p>
       </div>
-      <div class="card">
-        <h3>Rostr Hub — Persistent Memory</h3>
-        <p>Multi-level state management (session → project → org → agent). Stores decisions, learnings, execution history. Knowledge compounds across sessions. The agent OS.</p>
+      <div class="feature">
+        <div class="feature-icon">💾</div>
+        <h3>Hub — Persistent Memory</h3>
+        <p>Agents remember across sessions. Multi-level state: session, project, organization. Knowledge compounds over time. Your agents get smarter.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔑</div>
+        <h3>BYOK — Your Keys, Your Rules</h3>
+        <p>OpenAI, Anthropic, Gemini, OpenRouter, Ollama, LM Studio, AWS Bedrock, Azure. One platform, every provider. Switch models per task.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Multi-Model Routing</h3>
+        <p>ROSTR benchmarks show: deepseek-r1 for reasoning (85%), qwen2.5-coder for speed (84%), qwen for quick tasks (71%). Auto-routes to the best model for each job.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📦</div>
+        <h3>Skills Marketplace</h3>
+        <p>6 production skills included: PAL, NPAO, JTBD Builder, Instruction Architect, PRD Builder, Diagram Builder. Upload custom .skill files. Build your own.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔗</div>
+        <h3>100+ Integrations</h3>
+        <p>Composio-powered: Telegram, WhatsApp, Slack, Gmail, HubSpot, Salesforce, Notion, GitHub, Calendar, and 90+ more. Connect in one click.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🖥️</div>
+        <h3>Desktop + Web + API</h3>
+        <p>Electron desktop app for local-first. Vercel-powered web app for cloud. REST API for custom integrations. Pick your mode.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Skills Marketplace -->
-<section class="section" id="skills">
+<!-- How It Works -->
+<section class="section" style="border-top:1px solid var(--border)">
   <div class="section-inner">
-    <div class="section-header">
-      <div class="section-label">Production Skills</div>
-      <h2>41 Skills.<br><em>Ready to Deploy.</em></h2>
-      <p class="section-desc">Production-grade skills across GTM, development, content, data, automation, and operations. Generalized, LLM-agnostic, MIT licensed.</p>
+    <div class="section-label">Setup</div>
+    <h2>Running in 60 seconds.</h2>
+    <p class="section-desc">No complex setup. No infrastructure to manage. Just add your key and go.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Add Your API Key</h3>
+        <p>Enter your OpenAI, Anthropic, or any provider key. Or use Ollama for free local models.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">Settings → API Keys → Add Provider</code>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Connect Integrations</h3>
+        <p>One-click Composio OAuth. Connect Slack, HubSpot, Gmail, WhatsApp — whatever your workflow needs.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">Integrations → Connect → OAuth</code>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Start Building</h3>
+        <p>Chat with your agent. PAL enhances every prompt. NPAO routes to the right handler. Results in seconds.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">"Research prospects in fintech expanding to EU"</code>
+      </div>
     </div>
-    <div class="grid">
-      <div class="card">
-        <h3>GTM & Sales</h3>
-        <p>Clay Prospecting, Agent Factory, GTM Architect, JTBD Builder, Use Case Builder, Asana Organizer, Video Builder, GTM Insider Report.</p>
-      </div>
-      <div class="card">
-        <h3>Developer Tools</h3>
-        <p>PAL Compiler, Context Engine, ROSTR Builder, Prompt Rewriter, n8n Engineer, Workflow Architect, Execution Analyst, CSV Router.</p>
-      </div>
-      <div class="card">
-        <h3>Content & Video</h3>
-        <p>Video Editor (HyperFrames), Video Studio, Case Study Builder, Project Instructions, Session Recap, Project Handoff.</p>
-      </div>
-      <div class="card">
-        <h3>Data & Analytics</h3>
-        <p>HubSpot Analyst, Dashboard Builder, Token Spend Analyzer, Clay Credit Estimator, CSV Enricher, Credit Calculator.</p>
-      </div>
-      <div class="card">
-        <h3>Automation</h3>
-        <p>Workflow Builder, n8n Architect, Execution Analyst, CSV Router, Executive Assistant, File Organizer.</p>
-      </div>
-      <div class="card">
-        <h3>Product & Ops</h3>
-        <p>SaaS Architect, Product Builder, Project Closeout, Handoff Builder, New Project System, Instructions Builder.</p>
-      </div>
+  </div>
+</section>
+
+<!-- Integrations -->
+<section class="section" id="integrations" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Composio-Powered</div>
+    <h2>100+ integrations. One click.</h2>
+    <p class="section-desc">Connect your entire stack via Composio. OAuth login, instant setup, full API access from your agent.</p>
+    <div class="integrations-grid">
+      <div class="integration">💬 Slack <span class="integration-badge">LIVE</span></div>
+      <div class="integration">📱 WhatsApp <span class="integration-badge">LIVE</span></div>
+      <div class="integration">✉️ Telegram <span class="integration-badge">LIVE</span></div>
+      <div class="integration">📨 Gmail</div>
+      <div class="integration">📊 HubSpot</div>
+      <div class="integration">☁️ Salesforce</div>
+      <div class="integration">📝 Notion</div>
+      <div class="integration">🐙 GitHub</div>
+      <div class="integration">📅 Google Calendar</div>
+      <div class="integration">📋 Linear</div>
+      <div class="integration">🗂️ Airtable</div>
+      <div class="integration">💳 Stripe</div>
+      <div class="integration">📦 Jira</div>
+      <div class="integration">🔔 Discord</div>
+      <div class="integration">📁 Google Drive</div>
+      <div class="integration">🎯 Apollo</div>
+      <div class="integration">📞 Outreach</div>
+      <div class="integration">🔍 DuckDuckGo Search</div>
+      <div class="integration">📂 File System</div>
+      <div class="integration">🤖 Signal</div>
+      <div class="integration" style="background:var(--cyan-dim);border-color:rgba(6,182,212,.3)">+80 more via Composio</div>
     </div>
   </div>
 </section>
 
 <!-- Benchmarks -->
-<section class="section" id="benchmarks">
+<section class="section" id="benchmarks" style="border-top:1px solid var(--border)">
   <div class="section-inner">
-    <div class="section-header">
-      <div class="section-label">Performance</div>
-      <h2>Proven Results.<br><em>Real Data.</em></h2>
-      <p class="section-desc">Evaluated against Hermes runtime on 11 real-world benchmark tasks across GTM, code, content, analytics, ops, productivity, research, and integration. Full evaluation report and benchmark details available on GitHub.</p>
+    <div class="section-label">Performance</div>
+    <h2>Real benchmarks. Real models.</h2>
+    <p class="section-desc">We tested ROSTR across 5 local models on real tasks — PAL compilation, NPAO routing, RAG grounding, Hub synthesis, and full pipeline orchestration.</p>
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Provider</th>
+          <th>Score</th>
+          <th>Latency</th>
+          <th>Best For</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bench-highlight">deepseek-r1:14b</td>
+          <td>Ollama</td>
+          <td class="bench-highlight">85.1%</td>
+          <td>33s</td>
+          <td>Reasoning, synthesis</td>
+          <td><span class="bench-badge a">A+</span></td>
+        </tr>
+        <tr>
+          <td class="bench-highlight">qwen2.5-coder:14b</td>
+          <td>Ollama</td>
+          <td class="bench-highlight">84.4%</td>
+          <td>15s</td>
+          <td>Default (best balance)</td>
+          <td><span class="bench-badge a">A</span></td>
+        </tr>
+        <tr>
+          <td>qwen:latest</td>
+          <td>Ollama</td>
+          <td>71.2%</td>
+          <td>3s</td>
+          <td>Quick PAL enhance</td>
+          <td><span class="bench-badge b">B+</span></td>
+        </tr>
+        <tr>
+          <td>deepseek-coder:6.7b</td>
+          <td>Ollama</td>
+          <td>67.9%</td>
+          <td>5s</td>
+          <td>Lightweight / mobile</td>
+          <td><span class="bench-badge b">B+</span></td>
+        </tr>
+        <tr>
+          <td>qwen3.5:latest</td>
+          <td>Ollama</td>
+          <td>57.7%</td>
+          <td>98s</td>
+          <td>Not recommended</td>
+          <td><span class="bench-badge" style="background:rgba(239,68,68,.15);color:var(--red)">C</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--dim);margin-top:16px">Evaluated July 2026. 5 tasks per model (Intent Compilation, NPAO Routing, RAG Grounding, Hub Synthesis, Full Pipeline). Scoring: automated criteria matching + structure analysis. <a href="https://github.com/diamitani/rostr-agent/blob/main/LLM_BENCHMARK_REPORT.md" style="color:var(--cyan)">Full methodology →</a></p>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Pricing</div>
+    <h2>Simple, transparent pricing.</h2>
+    <p class="section-desc">Self-host for free. Or use our cloud with managed infrastructure, auto-scaling, and zero ops.</p>
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-name">Self-Hosted</div>
+        <div class="price-amount">$0<span>/forever</span></div>
+        <p class="price-desc">Run on your machine. Full access. No limits.</p>
+        <ul class="price-features">
+          <li>All features unlocked</li>
+          <li>Desktop app (Electron)</li>
+          <li>Local Ollama models</li>
+          <li>Your own API keys</li>
+          <li>Community support</li>
+          <li>MIT licensed</li>
+        </ul>
+        <a href="https://github.com/diamitani/rostr-agent" class="price-btn ghost">Clone Repo →</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">Cloud Pro</div>
+        <div class="price-amount">$20<span>/month</span></div>
+        <p class="price-desc">Managed cloud. Zero ops. Scales automatically.</p>
+        <ul class="price-features">
+          <li>Everything in Self-Hosted</li>
+          <li>Managed AWS infrastructure</li>
+          <li>Web dashboard (app.rostragent.com)</li>
+          <li>100+ Composio integrations</li>
+          <li>Persistent Hub storage</li>
+          <li>Priority support</li>
+          <li>$0.10/1K executions after 1000 free</li>
+        </ul>
+        <a href="https://app.rostragent.com" class="price-btn primary">Start Free Trial →</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amount">Custom</div>
+        <p class="price-desc">For teams that need dedicated infrastructure.</p>
+        <ul class="price-features">
+          <li>Everything in Cloud Pro</li>
+          <li>Dedicated AWS deployment</li>
+          <li>SSO / SAML</li>
+          <li>Custom skills development</li>
+          <li>SLA guarantee</li>
+          <li>White-label option</li>
+        </ul>
+        <a href="mailto:patrick.diamitani@gmail.com" class="price-btn ghost">Contact Sales →</a>
+      </div>
     </div>
-    <div style="overflow-x:auto;margin-top:2rem">
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
-            <th style="text-align:left;padding:12px;color:var(--muted);font-weight:500">Metric</th>
-            <th style="text-align:left;padding:12px;color:var(--muted);font-weight:500">Hermes (baseline)</th>
-            <th style="text-align:left;padding:12px;color:var(--muted);font-weight:500">ROSTR Agent</th>
-            <th style="text-align:left;padding:12px;color:var(--accent);font-weight:600">Delta</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Task Completion Rate</td>
-            <td style="padding:12px">76.9%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">88.6%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+15.2pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Accuracy</td>
-            <td style="padding:12px">70.5%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">78.5%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+11.5pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Coherence</td>
-            <td style="padding:12px">71.4%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">85.5%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+19.7pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Decision Quality</td>
-            <td style="padding:12px">69.9%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">79.0%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">+13.0pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Context Utilization</td>
-            <td style="padding:12px">79.4%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">77.5%</td>
-            <td style="padding:12px">−2.3pp</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:12px">Knowledge Retention</td>
-            <td style="padding:12px">73.4%</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">70.9%</td>
-            <td style="padding:12px">−3.3pp</td>
-          </tr>
-          <tr>
-            <td style="padding:12px">Avg Tokens per Completed Task</td>
-            <td style="padding:12px">4,200</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">2,800</td>
-            <td style="padding:12px;color:var(--accent);font-weight:600">-33%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="font-size:11px;color:var(--dim);margin-top:20px;text-align:center">Evaluation: 200 tasks across 8 domains (code, research, ops, design, sales, content, deploy, debug). Same model (claude-sonnet-4-6), same temperature (0.7), same tools. Only variable: ROSTR intelligence layer.</p>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="cta-section" id="cta">
-  <div class="cta-inner">
-    <h2>Ready to Build?</h2>
-    <p class="cta-desc">Deploy ROSTR locally, to AWS, or use Vercel. Free and open source. MIT licensed. No vendor lock-in.</p>
-    <div class="cta-links">
-      <a href="https://github.com/diamitani/rostr-agent" target="_blank" rel="noopener" class="btn btn-primary">Clone on GitHub</a>
-      <a href="#" class="btn btn-ghost">Download Skills</a>
-      <a href="https://zenodo.org/records/19550414" target="_blank" rel="noopener" class="btn btn-ghost">Read Paper</a>
-    </div>
+<section class="cta" id="cta">
+  <h2>Start building in 60 seconds.</h2>
+  <p class="cta-desc">No credit card required. Add your API key and go. Self-host free forever, or try cloud pro.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
+    <a href="https://app.rostragent.com" class="btn-lg btn-primary">Launch Dashboard →</a>
+    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Self-Host (Free)</a>
   </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
+<footer>
   <div class="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <h3>ROSTR Agent</h3>
-        <p>Self-improving multi-agent framework combining Hermes runtime with ROSTR intelligence layer. Production-ready, research-backed, open source.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Framework</h4>
-        <a href="#features">Architecture</a>
-        <a href="#research">Research</a>
-        <a href="#skills">Skills</a>
-        <a href="#benchmarks">Benchmarks</a>
-      </div>
-      <div class="footer-col">
-        <h4>Resources</h4>
-        <a href="https://github.com/diamitani/rostr-agent">GitHub Repo</a>
-        <a href="https://zenodo.org/records/19550414">Research Paper</a>
-        <a href="https://www.youtube.com/watch?v=vKGtIY-MR8Y">Explainer Video</a>
-        <a href="#">Documentation</a>
-      </div>
-      <div class="footer-col">
-        <h4>Connect</h4>
-        <a href="https://linkedin.com/in/diamitani">LinkedIn</a>
-        <a href="mailto:patrick.diamitani@gmail.com">Email</a>
-        <a href="https://www.diamitani.com">Portfolio</a>
-        <a href="#">Twitter</a>
-      </div>
-    </div>
-    <div class="footer-base">
-      <p>ROSTR Agent v1.0.0 · MIT License</p>
-      <p>Patrick Diamitani · Diamitani Industries · © 2026</p>
+    <p>ROSTR v1.0 · MIT License · Patrick Diamitani · Diamitani Industries © 2026</p>
+    <div class="footer-links">
+      <a href="https://github.com/diamitani/rostr-agent">GitHub</a>
+      <a href="https://zenodo.org/records/19550414">Research Paper</a>
+      <a href="https://linkedin.com/in/diamitani">LinkedIn</a>
+      <a href="mailto:patrick.diamitani@gmail.com">Contact</a>
     </div>
   </div>
 </footer>
