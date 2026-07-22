@@ -73,13 +73,13 @@ jobs:
   typecheck:
     name: TypeScript
     needs: detect
-    if: needs.detect.outputs.frontend == 'true'
+    if: needs.detect.outputs.frontend == 'true' && needs.detect.outputs.event_name == 'pull_request'
     uses: ./.github/workflows/typecheck.yml
 
   docs-site:
     name: Docs Site
     needs: detect
-    if: needs.detect.outputs.site == 'true'
+    if: needs.detect.outputs.site == 'true' && needs.detect.outputs.event_name == 'pull_request'
     uses: ./.github/workflows/docs-site-checks.yml
 
   history-check:
@@ -97,6 +97,7 @@ jobs:
   uv-lockfile:
     name: Check uv.lock
     needs: detect
+    if: needs.detect.outputs.event_name == 'pull_request'
     uses: ./.github/workflows/uv-lockfile-check.yml
 
   docker-lint:
