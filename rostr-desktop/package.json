@@ -1,0 +1,26 @@
+{
+  "name": "rostr-desktop",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "homepage": "./",
+  "scripts": {
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "electron-start": "electron .",
+    "dev": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-start\"",
+    "build": "npm run react-build && electron-builder",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "electron": "^latest",
+    "electron-builder": "^latest",
+    "concurrently": "^latest",
+    "wait-on": "^latest"
+  }
+}
