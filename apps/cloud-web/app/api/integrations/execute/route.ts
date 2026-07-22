@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const COMPOSIO_BASE_URL = "https://backend.composio.dev/api/v1";
+const COMPOSIO_BASE_URL = "https://backend.composio.dev/api/v3";
 const COMPOSIO_API_KEY = process.env.COMPOSIO_API_KEY || "";
 
 /**
  * POST /api/integrations/execute
  *
- * Execute a Composio action on behalf of a user.
+ * Execute a Composio tool/action on behalf of a user.
+ * Uses POST /api/v3/tools/execute/{ACTION_NAME}
  *
  * Body:
  *   - entity_id (required): The ROSTR user identifier
- *   - action (required): Action name (e.g., "SLACK_SEND_MESSAGE")
- *   - params (required): Action-specific input parameters
+ *   - action (required): Tool/action name (e.g., "GMAIL_SEND_EMAIL")
+ *   - params (required): Action-specific input parameters (passed as 'arguments')
  *   - connected_account_id (optional): Specific connected account to use
  */
 export async function POST(req: NextRequest) {
@@ -32,10 +33,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const { entity_id, action, params, connected_account_id } = body;
@@ -49,16 +47,16 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload: Record<string, any> = {
-      entityId: entity_id,
-      input: params,
+      entity_id,
+      arguments: params,
     };
 
     if (connected_account_id) {
-      payload.connectedAccountId = connected_account_id;
+      payload.connected_account_id = connected_account_id;
     }
 
     const response = await fetch(
-      `${COMPOSIO_BASE_URL}/actions/${encodeURIComponent(action)}/execute`,
+      `${COMPOSIO_BASE_URL}/tools/execute/${encodeURIComponent(action)}`,
       {
         method: "POST",
         headers: {
@@ -70,12 +68,12 @@ export async function POST(req: NextRequest) {
     );
 
     if (!response.ok) {
-      const errText = await response.text();
+      const errData = await response.json().catch(() => ({}));
       return NextResponse.json(
         {
           error: "Action execution failed",
           action,
-          detail: errText,
+          detail: errData.error?.message || errData,
           status: response.status,
         },
         { status: response.status }
