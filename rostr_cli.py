@@ -126,7 +126,7 @@ class RostrCLI:
             print(f"Error: benchmark_tasks.json not found", file=sys.stderr)
             return 1
 
-        with open(tasks_file) as f:
+        with open(tasks_file, encoding="utf-8") as f:
             tasks = json.load(f)
 
         print(f"Benchmark Tasks ({len(tasks['tasks'])} total)")

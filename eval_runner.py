@@ -40,7 +40,7 @@ class EvaluationRunner:
         if not self.benchmark_file.exists():
             raise FileNotFoundError(f"{self.benchmark_file} not found")
 
-        with open(self.benchmark_file) as f:
+        with open(self.benchmark_file, encoding="utf-8") as f:
             return json.load(f)
 
     def run_single_task(self, agent_name: str, task: Dict[str, Any]) -> Dict[str, Any]:
@@ -173,7 +173,7 @@ class EvaluationRunner:
 
     def save_json(self, filename: str = "eval_results.json"):
         """Save results as JSON"""
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         print(f"✓ Saved: {filename}")
 
@@ -281,7 +281,7 @@ ROSTR demonstrates measurable advantages over Hermes across all key dimensions, 
 *Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC*
 """
 
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(md)
 
         print(f"✓ Saved: {filename}")

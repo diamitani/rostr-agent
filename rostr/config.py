@@ -39,7 +39,7 @@ class ConfigManager:
     def _load_from_local(self):
         """Load from ~/.rostr/config.json"""
         if os.path.exists(self.local_config_path):
-            with open(self.local_config_path) as f:
+            with open(self.local_config_path, encoding="utf-8") as f:
                 self.config = json.load(f)
             logger.info(f"Loaded local config: {self.local_config_path}")
         else:
@@ -93,6 +93,6 @@ class ConfigManager:
             "llm_temperature": llm_config.temperature,
             "llm_max_tokens": llm_config.max_tokens,
         }
-        with open(self.local_config_path, "w") as f:
+        with open(self.local_config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2)
         logger.info(f"Saved config to {self.local_config_path}")

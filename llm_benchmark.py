@@ -515,13 +515,13 @@ async def main():
     }
 
     output_path = Path("/tmp/rostr-agent/llm_benchmark_results.json")
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
     print(f"\nResults saved to: {output_path}")
 
     # Save markdown report
     md_path = Path("/tmp/rostr-agent/LLM_BENCHMARK_REPORT.md")
-    with open(md_path, "w") as f:
+    with open(md_path, "w", encoding="utf-8") as f:
         f.write("# ROSTR Multi-LLM Benchmark Report\n\n")
         f.write(f"**Date:** {time.strftime('%Y-%m-%d %H:%M')}\n")
         f.write(f"**Models tested:** {len(models_to_test)}\n")

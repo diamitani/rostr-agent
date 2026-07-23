@@ -178,6 +178,70 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
     </div>
   </div>
 
+  <!-- ROSTR on Hermes Evaluation -->
+  <div class="results" style="margin-top:3rem">
+    <h2 id="rostr-vs-hermes">ROSTR + Hermes: Evaluation Results</h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">ROSTR is built as an architectural layer on top of <strong style="color:var(--text)">Hermes Agent</strong> (Nous Research). The evaluation below shows what ROSTR adds to the Hermes baseline — measured across 11 real-world tasks spanning 8 domains.</p>
+
+    <div class="results-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:2rem">
+      <div class="result-box">
+        <div class="result-value" style="font-size:20px;color:var(--muted)">76.9%</div>
+        <div class="result-label">Hermes Baseline</div>
+        <div class="result-delta" style="color:var(--dim)">Task completion</div>
+      </div>
+      <div class="result-box" style="border-color:var(--cyan)">
+        <div class="result-value">88.6%</div>
+        <div class="result-label">ROSTR + Hermes</div>
+        <div class="result-delta">+15.2pp improvement</div>
+      </div>
+      <div class="result-box">
+        <div class="result-value" style="font-size:20px;color:var(--muted)">71.4%</div>
+        <div class="result-label">Hermes Coherence</div>
+        <div class="result-delta" style="color:var(--dim)">Baseline</div>
+      </div>
+      <div class="result-box" style="border-color:var(--cyan)">
+        <div class="result-value">85.5%</div>
+        <div class="result-label">ROSTR Coherence</div>
+        <div class="result-delta">+19.7pp improvement</div>
+      </div>
+    </div>
+
+    <table class="bench-table">
+      <thead>
+        <tr><th>Metric</th><th>Hermes Baseline</th><th>ROSTR + Hermes</th><th>Improvement</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Task Completion</td><td>76.9%</td><td style="color:var(--cyan);font-weight:600">88.6%</td><td style="color:var(--green)">+15.2pp</td></tr>
+        <tr><td>Accuracy</td><td>70.5%</td><td style="color:var(--cyan);font-weight:600">78.5%</td><td style="color:var(--green)">+11.5pp</td></tr>
+        <tr><td>Coherence</td><td>71.4%</td><td style="color:var(--cyan);font-weight:600">85.5%</td><td style="color:var(--green)">+19.7pp</td></tr>
+        <tr><td>Decision Quality</td><td>69.9%</td><td style="color:var(--cyan);font-weight:600">79.0%</td><td style="color:var(--green)">+13.0pp</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--dim);margin-top:12px">Evaluated on 11 tasks across GTM, code, content, analytics, ops, productivity, research, and integration domains. Hermes baseline: unmodified runtime with no ROSTR layers. ROSTR: PAL + NPAO + RAG DAL + Hub all active. <a href="https://github.com/diamitani/rostr-agent/blob/main/EVALUATION_REPORT.md" style="color:var(--cyan)">Full methodology →</a></p>
+
+    <div style="margin-top:2rem;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+      <div style="font-size:12px;font-family:var(--mono);color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">What ROSTR adds to Hermes</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">PAL — Prompt Abstraction Layer</div>
+          <div style="font-size:12px;color:var(--muted)">Compiles raw user input into structured agent manifests. 5-stage pipeline eliminates prompt fragility.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">NPAO — Decision Engine</div>
+          <div style="font-size:12px;color:var(--muted)">4D priority scoring routes each task to the right model and handler. Replaces one-size-fits-all routing.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">RAG DAL — Knowledge Engine</div>
+          <div style="font-size:12px;color:var(--muted)">3-tier multi-pass retrieval with credibility scoring. Grounds responses in verified context.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Hub — Persistent State</div>
+          <div style="font-size:12px;color:var(--muted)">6-level state inheritance (session→global). Agents learn and compound knowledge across sessions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Multi-LLM Benchmark -->
   <div class="results">
     <h2>Multi-LLM Benchmark (July 2026)</h2>
