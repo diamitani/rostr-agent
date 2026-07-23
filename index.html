@@ -572,11 +572,26 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
 </footer>
 
 <script>
+// ROSTR API endpoint — set to your App Runner URL once deployed
+// Falls back to direct browser call if API is not available
+const ROSTR_API = 'https://api.rostragent.com';
+
 let apiKey = '';
 let provider = 'openai';
 let conversationHistory = [];
+let apiOnline = false;
 
-const SYSTEM_PROMPT = `You are ROSTR Agent — a production AI assistant with PAL (Prompt Abstraction Layer) that enhances every user request before executing. You help with research, outreach drafting, data analysis, and automation tasks. Be concise, actionable, and specific. When the user asks you to research a company, provide real insights. When they ask for outreach, write compelling copy. Always think step-by-step internally but output clean results.`;
+// Check if ROSTR backend is live
+fetch(ROSTR_API + '/health').then(r => {
+  if (r.ok) { apiOnline = true; updateStatusIndicator(true); }
+}).catch(() => { apiOnline = false; });
+
+function updateStatusIndicator(online) {
+  const el = document.getElementById('status-text');
+  const dot = document.querySelector('#chat-ui .dash-bar div');
+  if (el) el.textContent = online ? 'Connected via ROSTR API' : 'Connected (direct mode)';
+  if (dot) dot.style.background = online ? 'var(--cyan)' : 'var(--green)';
+}
 
 function startChat() {
   apiKey = document.getElementById('api-key-input').value.trim();
@@ -595,7 +610,7 @@ function startChat() {
   document.getElementById('model-label').textContent = provider === 'openai' ? 'gpt-4o' : 'claude-sonnet-4-20250514';
   document.getElementById('chat-input').focus();
 
-  conversationHistory = [{ role: 'system', content: SYSTEM_PROMPT }];
+  conversationHistory = [];
 }
 
 async function sendMessage() {
@@ -605,21 +620,54 @@ async function sendMessage() {
 
   input.value = '';
   appendMessage(msg, 'user');
-  conversationHistory.push({ role: 'user', content: msg });
 
   const typingEl = showTyping();
 
   try {
-    let response;
-    if (provider === 'openai') {
-      response = await callOpenAI(conversationHistory);
+    let response, enhanced = null;
+
+    if (apiOnline) {
+      // Route through ROSTR backend — PAL + NPAO + full pipeline
+      const res = await fetch(ROSTR_API + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          provider: provider,
+          api_key: apiKey,
+          history: conversationHistory,
+          workspace_id: 'web-demo'
+        })
+      });
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      response = data.message;
+      enhanced = data.enhanced_prompt !== msg ? data.enhanced_prompt : null;
+      conversationHistory.push({ role: 'user', content: msg });
+      conversationHistory.push({ role: 'assistant', content: response });
     } else {
-      response = await callAnthropic(conversationHistory);
+      // Fallback: direct browser call (no ROSTR pipeline)
+      conversationHistory.push({ role: 'user', content: msg });
+      if (provider === 'openai') {
+        response = await callOpenAI(conversationHistory);
+      } else {
+        response = await callAnthropic(conversationHistory);
+      }
+      conversationHistory.push({ role: 'assistant', content: response });
     }
 
     typingEl.remove();
     appendMessage(response, 'ai');
-    conversationHistory.push({ role: 'assistant', content: response });
+
+    // Show PAL enhancement badge if prompt was enhanced
+    if (enhanced) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:10px;color:var(--gold);padding:4px 8px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.2);border-radius:6px;margin-top:-8px;align-self:flex-start';
+      badge.textContent = '✨ PAL enhanced your prompt';
+      badge.title = enhanced;
+      document.getElementById('chat-messages').appendChild(badge);
+    }
+
   } catch (err) {
     typingEl.remove();
     appendMessage('Error: ' + (err.message || 'Request failed. Check your API key.'), 'ai');
@@ -630,35 +678,20 @@ async function callOpenAI(messages) {
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({ model: 'gpt-4o', messages: messages, max_tokens: 1024 })
+    body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are ROSTR Agent, a helpful AI assistant.' }, ...messages], max_tokens: 1024 })
   });
   if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
-  const data = await res.json();
-  return data.choices[0].message.content;
+  return (await res.json()).choices[0].message.content;
 }
 
 async function callAnthropic(messages) {
-  const sysMsg = messages.find(m => m.role === 'system')?.content || '';
-  const userMsgs = messages.filter(m => m.role !== 'system');
-
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
-      system: sysMsg,
-      messages: userMsgs
-    })
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, system: 'You are ROSTR Agent, a helpful AI assistant.', messages })
   });
   if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
-  const data = await res.json();
-  return data.content[0].text;
+  return (await res.json()).content[0].text;
 }
 
 function appendMessage(text, type) {
