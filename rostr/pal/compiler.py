@@ -1118,8 +1118,8 @@ class ModelRouter:
 
     # Model tier definitions
     OPUS_TIER = "claude-opus-4"
-    SONNET_TIER = "claude-sonnet-4-6"
-    HAIKU_TIER = "claude-haiku-3-5"
+    SONNET_TIER = "claude-sonnet-4-20250514"
+    HAIKU_TIER = "claude-haiku-4-5-20251001"
 
     # Fallback chains
     _FALLBACK_CHAINS: dict[str, list[str]] = {

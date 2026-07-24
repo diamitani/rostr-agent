@@ -258,7 +258,26 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
         <tr><td>5</td><td>qwen3.5:latest</td><td>Ollama</td><td>57.7%</td><td>98s</td><td>57.7</td></tr>
       </tbody>
     </table>
-    <p style="font-size:12px;color:var(--dim);margin-top:12px">Value Score = Quality x Speed^0.3 (diminishing returns on raw speed). qwen2.5-coder:14b recommended as default backend (best quality/speed ratio).</p>
+    <p style="font-size:12px;color:var(--dim);margin-top:12px">Value Score = Quality × Speed^0.3. <a href="https://github.com/diamitani/rostr-agent/blob/main/LLM_BENCHMARK_REPORT.md" style="color:var(--cyan)">Full methodology →</a></p>
+  </div>
+
+  <!-- PAL Smart Routing — verified July 2026 -->
+  <div class="results" style="margin-top:3rem">
+    <h2>PAL Smart Routing — Verified Real Outputs</h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">Run locally July 24, 2026. No mocks. PAL determines domain, urgency, and model selection deterministically — no LLM call needed.</p>
+    <table class="bench-table">
+      <thead>
+        <tr><th>Input</th><th>Domain</th><th>Urgency</th><th>Model Selected</th><th>Tools</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Research Stripe, write cold email to VP Sales</td><td style="color:var(--cyan)">sales</td><td>normal</td><td>claude-sonnet-4</td><td>web_search, crm_api</td></tr>
+        <tr><td>Critical production bug: auth down, 500s on login</td><td style="color:var(--cyan)">debug</td><td style="color:var(--red);font-weight:600">critical</td><td style="color:var(--gold);font-weight:600">claude-opus-4</td><td>code_execution, file_read</td></tr>
+        <tr><td>Build dashboard: monthly pipeline data by rep</td><td style="color:var(--cyan)">deploy</td><td>normal</td><td>claude-sonnet-4</td><td>code_execution, file_read</td></tr>
+        <tr><td>Competitive battle card vs Salesforce</td><td style="color:var(--cyan)">sales</td><td>normal</td><td>claude-sonnet-4</td><td>web_search, crm_api</td></tr>
+        <tr><td>Create web app for Artispreneur booking calendar</td><td style="color:var(--cyan)">code</td><td>normal</td><td>claude-sonnet-4</td><td>code_execution, file_read</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--dim);margin-top:12px">Critical urgency → Opus (quality first). Normal → Sonnet. PAL selects tools by domain: sales gets CRM, debug/code gets code_execution.</p>
   </div>
 
   <!-- Architecture -->

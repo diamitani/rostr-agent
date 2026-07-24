@@ -138,6 +138,10 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
 .footer-links a{font-size:12px;color:var(--muted);text-decoration:none}
 .footer-links a:hover{color:var(--text)}
 
+/* Prompt chips */
+.prompt-chip{padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;text-align:left;white-space:nowrap}
+.prompt-chip:hover{border-color:var(--cyan);color:var(--text);background:var(--cyan-dim)}
+
 /* Video Embed */
 .video-embed{max-width:900px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9;box-shadow:0 40px 100px rgba(0,0,0,.5)}
 .video-embed iframe{width:100%;height:100%;display:block}
@@ -476,7 +480,15 @@ footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--sur
           <span style="margin-left:auto;font-size:10px;color:var(--dim)" id="model-label">gpt-4o</span>
         </div>
         <div id="chat-messages" style="min-height:300px;max-height:450px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px">
-          <div class="dash-msg ai">Hello! I'm ROSTR — your AI agent with PAL-enhanced prompting. Ask me anything, or try: "Research a company called Stripe and draft a cold outreach email."</div>
+          <div class="dash-msg ai">Hello! I'm ROSTR — your AI agent with PAL-enhanced prompting. PAL compiles every message into a structured plan before calling the model. Try one of these:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            <button onclick="usePrompt(this)" class="prompt-chip">Research Stripe and draft a cold email to their VP of Sales</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Create a marketing plan for Artispreneur launch</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Build a web app for a music booking platform</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Write a competitive battle card vs Salesforce</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Summarize last quarter's pipeline and flag risks</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Draft a product requirements doc for a ROSTR Hub dashboard</button>
+          </div>
         </div>
         <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
           <input id="chat-input" type="text" placeholder="Ask ROSTR anything..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')sendMessage()">
@@ -711,6 +723,11 @@ function showTyping() {
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
   return div;
+}
+
+function usePrompt(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  document.getElementById('chat-input').focus();
 }
 
 // Restore session
