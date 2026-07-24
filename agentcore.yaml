@@ -1,0 +1,46 @@
+# AgentCore deployment configuration for ROSTR
+#
+# Deploy:  agentcore deploy
+# Invoke:  POST <endpoint>/invoke  {"prompt": "...", "api_key": "sk-..."}
+
+name: rostr-agent
+region: us-east-1
+
+# Entry point — the file containing @app.entrypoint
+entrypoint: rostr/agentcore_backend.py
+
+# Built-in managed memory — maps to ROSTR Hub concept.
+# AgentCore handles storage; the session object in each invocation
+# exposes get_memory() / memory.put() automatically.
+memory:
+  enabled: true
+  type: session           # session | persistent | none
+  max_turns: 50           # cap conversation history at 50 turns
+  ttl_seconds: 86400      # 24 h session window
+
+# Runtime
+runtime:
+  python: "3.11"
+  # Dependencies are read from pyproject.toml / requirements.txt in the
+  # project root at deploy time.  Ensure amazon-bedrock-agentcore and httpx
+  # are listed there.
+  env:
+    # Set LOG_LEVEL to debug in staging for verbose PAL + memory traces
+    LOG_LEVEL: info
+    # PORT is set automatically by the AgentCore harness
+    # PORT: 8080
+
+# Scaling
+scaling:
+  min_instances: 1
+  max_instances: 10
+  concurrency: 100
+
+# Observability
+observability:
+  logging: true
+  tracing: true           # X-Ray tracing; manifest_id is emitted as trace attr
+  metrics: true
+
+# IAM — AgentCore will create/use this execution role
+execution_role: arn:aws:iam::ACCOUNT_ID:role/rostr-agentcore-role

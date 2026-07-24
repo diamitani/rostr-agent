@@ -14,7 +14,7 @@ import httpx
 import uvicorn
 
 from rostr.pal.compiler import PALCompiler
-from rostr.npao import NPAORouter
+from rostr.npao import NPAO
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ app.add_middleware(
 )
 
 pal_compiler = PALCompiler()
-npao_router = NPAORouter()
+npao_router = NPAO()
 
 
 # ── Models ────────────────────────────────────────────────────────────────────

@@ -565,7 +565,9 @@ class InMemoryHubStore:
     def get_agent(self, agent_id: str) -> Optional[AgentRecord]:
         return self._agents.get(agent_id)
 
-    def list_agents(self, namespace: str = "global") -> list[AgentRecord]:
+    def list_agents(self, namespace: str = "") -> list[AgentRecord]:
+        if not namespace or namespace == "_all":
+            return list(self._agents.values())
         _validate_namespace(namespace)
         return [a for a in self._agents.values() if a.namespace == namespace]
 
@@ -589,19 +591,23 @@ class InMemoryHubStore:
     def search_learnings(
         self, query: str, namespace: str = "global", limit: int = 20
     ) -> list[Learning]:
-        _validate_namespace(namespace)
+        search_all = not namespace or namespace == "_all"
+        if not search_all:
+            _validate_namespace(namespace)
         results = []
         query_lower = query.lower()
         for l in self._learnings:
-            if l.namespace == namespace and query_lower in l.content.lower():
+            if (search_all or l.namespace == namespace) and query_lower in l.content.lower():
                 results.append(l)
         return sorted(results, key=lambda x: x.created_at, reverse=True)[:limit]
 
     def list_learnings(
         self, namespace: str = "global", status: Optional[LearningStatus] = None, limit: int = 50
     ) -> list[Learning]:
-        _validate_namespace(namespace)
-        filtered = [l for l in self._learnings if l.namespace == namespace]
+        search_all = not namespace or namespace == "_all"
+        if not search_all:
+            _validate_namespace(namespace)
+        filtered = self._learnings if search_all else [l for l in self._learnings if l.namespace == namespace]
         if status:
             filtered = [l for l in filtered if l.status == status]
         return sorted(filtered, key=lambda x: x.created_at, reverse=True)[:limit]
