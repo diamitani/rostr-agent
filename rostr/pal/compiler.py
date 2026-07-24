@@ -1149,9 +1149,12 @@ class ModelRouter:
     def _select_model_and_temp(self, intent: Intent) -> tuple[str, float]:
         """Core routing logic: domain + risk + urgency -> model + temperature."""
 
-        # Rule: High urgency -> fastest model regardless of other factors
+        # Rule: critical urgency + high risk -> opus (quality matters most)
+        # Rule: critical urgency + low risk -> sonnet (speed + quality)
         if intent.urgency == "critical":
-            return self.HAIKU_TIER, 0.2
+            if intent.risk_level in ("critical", "high"):
+                return self.OPUS_TIER, 0.1
+            return self.SONNET_TIER, 0.2
 
         # Rule: code/debug + high/critical risk -> opus, low temp
         if intent.domain in ("code", "debug") and intent.risk_level in ("critical", "high"):
