@@ -1,0 +1,7 @@
+anthropic==1.43.0
+openai==1.57.0
+requests==2.32.3
+pydantic==2.10.4
+pyyaml==6.0.2
+python-dotenv==1.0.1
+duckduckgo-search==3.9.14

@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install only what the API server needs
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir fastapi uvicorn[standard] pydantic httpx python-dotenv
+
+# Copy ROSTR core
+COPY rostr/ ./rostr/
+
+# Copy server entrypoint
+COPY rostr/api_server.py ./api_server.py
+
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
+
+EXPOSE 8080
+
+CMD ["uvicorn", "rostr.api_server:app", "--host", "0.0.0.0", "--port", "8080"]

@@ -1,0 +1,437 @@
+{
+  "timestamp": "2026-07-21T02:07:26.421705",
+  "version": "1.0",
+  "framework": {
+    "hermes": {
+      "version": "unknown",
+      "model": "unknown"
+    },
+    "rostr": {
+      "version": "0.1.0",
+      "model": "unknown"
+    }
+  },
+  "tasks_run": 11,
+  "metrics": {
+    "hermes": {
+      "task_completion": {
+        "avg": 76.9090909090909,
+        "min": 55,
+        "max": 90
+      },
+      "accuracy": {
+        "avg": 70.45454545454545,
+        "min": 51,
+        "max": 80
+      },
+      "context_utilization": {
+        "avg": 79.36363636363636,
+        "min": 66,
+        "max": 88
+      },
+      "coherence": {
+        "avg": 71.36363636363636,
+        "min": 56,
+        "max": 92
+      },
+      "knowledge_retention": {
+        "avg": 73.36363636363636,
+        "min": 60,
+        "max": 84
+      },
+      "decision_quality": {
+        "avg": 69.9090909090909,
+        "min": 55,
+        "max": 85
+      },
+      "tokens_used": {
+        "avg": 2545.909090909091,
+        "min": 1260,
+        "max": 4441
+      }
+    },
+    "rostr": {
+      "task_completion": {
+        "avg": 88.63636363636364,
+        "min": 72,
+        "max": 100
+      },
+      "accuracy": {
+        "avg": 78.54545454545455,
+        "min": 63,
+        "max": 100
+      },
+      "context_utilization": {
+        "avg": 77.54545454545455,
+        "min": 66,
+        "max": 88
+      },
+      "coherence": {
+        "avg": 85.45454545454545,
+        "min": 71,
+        "max": 100
+      },
+      "knowledge_retention": {
+        "avg": 70.9090909090909,
+        "min": 64,
+        "max": 82
+      },
+      "decision_quality": {
+        "avg": 79.0,
+        "min": 63,
+        "max": 96
+      },
+      "tokens_used": {
+        "avg": 2601.6363636363635,
+        "min": 1889,
+        "max": 3254
+      }
+    },
+    "improvements": {
+      "task_completion": 15.248226950354619,
+      "accuracy": 11.48387096774194,
+      "context_utilization": -2.2909507445589856,
+      "coherence": 19.74522292993631,
+      "knowledge_retention": -3.3457249070631954,
+      "decision_quality": 13.00390117035111,
+      "tokens_used": -2.1888948402070976
+    },
+    "total_tasks": 22,
+    "hermes_count": 11,
+    "rostr_count": 11
+  },
+  "by_domain": {},
+  "summary": {},
+  "all_results": [
+    {
+      "task_id": "gtm_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 85,
+        "accuracy": 71,
+        "context_utilization": 76,
+        "coherence": 85,
+        "knowledge_retention": 61,
+        "tokens_used": 3629,
+        "decision_quality": 77
+      },
+      "duration_ms": 3747
+    },
+    {
+      "task_id": "gtm_002",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 87,
+        "accuracy": 67,
+        "context_utilization": 83,
+        "coherence": 68,
+        "knowledge_retention": 77,
+        "tokens_used": 1283,
+        "decision_quality": 70
+      },
+      "duration_ms": 3876
+    },
+    {
+      "task_id": "gtm_003",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 73,
+        "accuracy": 51,
+        "context_utilization": 66,
+        "coherence": 62,
+        "knowledge_retention": 80,
+        "tokens_used": 1260,
+        "decision_quality": 69
+      },
+      "duration_ms": 4253
+    },
+    {
+      "task_id": "code_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 79,
+        "accuracy": 71,
+        "context_utilization": 85,
+        "coherence": 76,
+        "knowledge_retention": 60,
+        "tokens_used": 4441,
+        "decision_quality": 67
+      },
+      "duration_ms": 2825
+    },
+    {
+      "task_id": "code_002",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 70,
+        "accuracy": 73,
+        "context_utilization": 84,
+        "coherence": 63,
+        "knowledge_retention": 84,
+        "tokens_used": 3406,
+        "decision_quality": 68
+      },
+      "duration_ms": 3011
+    },
+    {
+      "task_id": "content_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 90,
+        "accuracy": 70,
+        "context_utilization": 74,
+        "coherence": 70,
+        "knowledge_retention": 78,
+        "tokens_used": 3384,
+        "decision_quality": 81
+      },
+      "duration_ms": 3801
+    },
+    {
+      "task_id": "analytics_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 86,
+        "accuracy": 80,
+        "context_utilization": 79,
+        "coherence": 67,
+        "knowledge_retention": 69,
+        "tokens_used": 2185,
+        "decision_quality": 63
+      },
+      "duration_ms": 600
+    },
+    {
+      "task_id": "ops_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 72,
+        "accuracy": 77,
+        "context_utilization": 69,
+        "coherence": 83,
+        "knowledge_retention": 81,
+        "tokens_used": 1983,
+        "decision_quality": 73
+      },
+      "duration_ms": 3102
+    },
+    {
+      "task_id": "productivity_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 84,
+        "accuracy": 72,
+        "context_utilization": 88,
+        "coherence": 92,
+        "knowledge_retention": 76,
+        "tokens_used": 3152,
+        "decision_quality": 85
+      },
+      "duration_ms": 1864
+    },
+    {
+      "task_id": "research_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 65,
+        "accuracy": 70,
+        "context_utilization": 86,
+        "coherence": 63,
+        "knowledge_retention": 69,
+        "tokens_used": 1439,
+        "decision_quality": 61
+      },
+      "duration_ms": 2199
+    },
+    {
+      "task_id": "integration_001",
+      "agent": "hermes",
+      "completed": true,
+      "metrics": {
+        "task_completion": 55,
+        "accuracy": 73,
+        "context_utilization": 83,
+        "coherence": 56,
+        "knowledge_retention": 72,
+        "tokens_used": 1843,
+        "decision_quality": 55
+      },
+      "duration_ms": 2759
+    },
+    {
+      "task_id": "gtm_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 81,
+        "accuracy": 92,
+        "context_utilization": 66,
+        "coherence": 94,
+        "knowledge_retention": 77,
+        "tokens_used": 2480,
+        "decision_quality": 96
+      },
+      "duration_ms": 2667
+    },
+    {
+      "task_id": "gtm_002",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 100,
+        "accuracy": 81,
+        "context_utilization": 67,
+        "coherence": 79,
+        "knowledge_retention": 82,
+        "tokens_used": 2590,
+        "decision_quality": 75
+      },
+      "duration_ms": 1382
+    },
+    {
+      "task_id": "gtm_003",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 76,
+        "accuracy": 63,
+        "context_utilization": 73,
+        "coherence": 71,
+        "knowledge_retention": 65,
+        "tokens_used": 2012,
+        "decision_quality": 63
+      },
+      "duration_ms": 3211
+    },
+    {
+      "task_id": "code_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 99,
+        "accuracy": 75,
+        "context_utilization": 87,
+        "coherence": 82,
+        "knowledge_retention": 74,
+        "tokens_used": 2793,
+        "decision_quality": 73
+      },
+      "duration_ms": 3245
+    },
+    {
+      "task_id": "code_002",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 72,
+        "accuracy": 66,
+        "context_utilization": 72,
+        "coherence": 73,
+        "knowledge_retention": 64,
+        "tokens_used": 1889,
+        "decision_quality": 76
+      },
+      "duration_ms": 1203
+    },
+    {
+      "task_id": "content_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 100,
+        "accuracy": 85,
+        "context_utilization": 79,
+        "coherence": 100,
+        "knowledge_retention": 78,
+        "tokens_used": 2663,
+        "decision_quality": 82
+      },
+      "duration_ms": 2630
+    },
+    {
+      "task_id": "analytics_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 89,
+        "accuracy": 80,
+        "context_utilization": 88,
+        "coherence": 80,
+        "knowledge_retention": 67,
+        "tokens_used": 3230,
+        "decision_quality": 73
+      },
+      "duration_ms": 3464
+    },
+    {
+      "task_id": "ops_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 79,
+        "accuracy": 82,
+        "context_utilization": 88,
+        "coherence": 81,
+        "knowledge_retention": 66,
+        "tokens_used": 3254,
+        "decision_quality": 92
+      },
+      "duration_ms": 3129
+    },
+    {
+      "task_id": "productivity_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 100,
+        "accuracy": 100,
+        "context_utilization": 70,
+        "coherence": 100,
+        "knowledge_retention": 67,
+        "tokens_used": 2526,
+        "decision_quality": 82
+      },
+      "duration_ms": 2826
+    },
+    {
+      "task_id": "research_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 91,
+        "accuracy": 76,
+        "context_utilization": 80,
+        "coherence": 97,
+        "knowledge_retention": 64,
+        "tokens_used": 3228,
+        "decision_quality": 84
+      },
+      "duration_ms": 1524
+    },
+    {
+      "task_id": "integration_001",
+      "agent": "rostr",
+      "completed": true,
+      "metrics": {
+        "task_completion": 88,
+        "accuracy": 64,
+        "context_utilization": 83,
+        "coherence": 83,
+        "knowledge_retention": 76,
+        "tokens_used": 1953,
+        "decision_quality": 73
+      },
+      "duration_ms": 1824
+    }
+  ]
+}

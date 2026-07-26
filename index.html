@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROSTR — AI Agent Platform | Your Models, Your Rules</title>
+<meta name="description" content="Production AI agent platform. Bring your own keys (OpenAI, Anthropic, Gemini, Ollama). Smart routing, persistent memory, 1,000+ integrations via Composio. $20/month.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b;--surface:#18181b;--surface2:#27272a;--border:#3f3f46;
+  --text:#fafafa;--muted:#a1a1aa;--dim:#71717a;
+  --cyan:#06b6d4;--cyan-dim:rgba(6,182,212,.12);--cyan-glow:rgba(6,182,212,.25);
+  --gold:#eab308;--green:#22c55e;--red:#ef4444;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);--maxw:1140px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,11,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center;height:60px}
+.nav-logo{font-weight:800;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-.03em}
+.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none;font-weight:500;transition:color .15s}
+.nav-links a:hover{color:var(--text)}
+.btn-nav{padding:8px 16px;border-radius:8px;background:var(--cyan);color:#000;font-weight:600;font-size:13px;text-decoration:none;transition:all .15s}
+.btn-nav:hover{opacity:.9;transform:translateY(-1px)}
+
+/* Hero */
+.hero{margin-top:60px;padding:100px 2rem 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(--cyan-dim) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(42px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:1.25rem;position:relative}
+.hero h1 span{background:linear-gradient(135deg,var(--cyan),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn-lg{padding:14px 28px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s var(--ease)}
+.btn-primary{background:var(--cyan);color:#000}
+.btn-primary:hover{box-shadow:0 0 30px var(--cyan-glow);transform:translateY(-2px)}
+.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--cyan);color:var(--cyan)}
+.hero-proof{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.proof-item{font-size:13px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.proof-item .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* Dashboard Preview */
+.dash-preview{max-width:900px;margin:0 auto;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface);box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.dash-bar{height:36px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px}
+.dash-dot{width:10px;height:10px;border-radius:50%}
+.dash-dot.r{background:var(--red)}.dash-dot.y{background:var(--gold)}.dash-dot.g{background:var(--green)}
+.dash-body{display:grid;grid-template-columns:220px 1fr;min-height:380px}
+.dash-sidebar{background:var(--bg);border-right:1px solid var(--border);padding:16px 12px}
+.dash-nav-item{padding:8px 12px;border-radius:6px;font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.dash-nav-item.active{background:var(--cyan-dim);color:var(--cyan)}
+.dash-main{padding:24px}
+.dash-chat{display:flex;flex-direction:column;gap:12px}
+.dash-msg{padding:10px 14px;border-radius:10px;font-size:13px;max-width:75%;line-height:1.5}
+.dash-msg.user{background:var(--cyan);color:#000;align-self:flex-end;border-bottom-right-radius:4px}
+.dash-msg.ai{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--muted)}
+.dash-input{margin-top:auto;display:flex;gap:8px;padding-top:16px;border-top:1px solid var(--border)}
+.dash-input input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none}
+.dash-input button{background:var(--cyan);border:none;border-radius:8px;padding:10px 16px;color:#000;font-weight:600;font-size:12px;cursor:pointer}
+.pal-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);font-size:10px;color:var(--gold);font-weight:600;margin-top:8px;cursor:pointer}
+
+/* Sections */
+.section{padding:100px 2rem}
+.section-inner{max-width:var(--maxw);margin:0 auto}
+.section-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);margin-bottom:12px;font-weight:500}
+.section h2{font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:12px}
+.section-desc{font-size:16px;color:var(--muted);max-width:560px;line-height:1.7}
+
+/* Features Grid */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-top:3rem}
+.feature{background:var(--surface);padding:32px;transition:background .2s}
+.feature:hover{background:var(--surface2)}
+.feature-icon{width:40px;height:40px;border-radius:10px;background:var(--cyan-dim);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px}
+.feature h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* How It Works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:3rem}
+.step{position:relative;padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.step-num{position:absolute;top:-12px;left:20px;background:var(--cyan);color:#000;font-weight:700;font-size:12px;padding:4px 10px;border-radius:6px}
+.step h3{font-size:15px;font-weight:600;margin:8px 0}
+.step p{font-size:13px;color:var(--muted);line-height:1.6}
+.step code{font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--cyan)}
+
+/* Integrations */
+.integrations-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:2rem}
+.integration{padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;transition:all .15s}
+.integration:hover{border-color:var(--cyan);color:var(--text)}
+.integration-badge{font-size:10px;background:var(--cyan-dim);color:var(--cyan);padding:2px 6px;border-radius:4px;font-weight:600}
+
+/* Pricing */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:3rem}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;position:relative}
+.price-card.featured{border-color:var(--cyan);box-shadow:0 0 40px var(--cyan-dim)}
+.price-card.featured::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#000;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px}
+.price-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.price-amount{font-size:36px;font-weight:800;margin:12px 0}
+.price-amount span{font-size:14px;color:var(--muted);font-weight:400}
+.price-desc{font-size:13px;color:var(--muted);margin-bottom:20px}
+.price-features{list-style:none;margin-bottom:24px}
+.price-features li{font-size:13px;color:var(--muted);padding:6px 0;display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--cyan);font-weight:700}
+.price-btn{display:block;text-align:center;padding:12px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:all .15s}
+.price-btn.primary{background:var(--cyan);color:#000}
+.price-btn.primary:hover{opacity:.9}
+.price-btn.ghost{border:1px solid var(--border);color:var(--text)}
+.price-btn.ghost:hover{border-color:var(--cyan)}
+
+/* Benchmarks */
+.bench-table{width:100%;border-collapse:collapse;margin-top:2rem;font-size:13px}
+.bench-table th{text-align:left;padding:12px 16px;color:var(--dim);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.bench-table td{padding:12px 16px;border-bottom:1px solid rgba(63,63,70,.4)}
+.bench-table tr:hover{background:var(--surface)}
+.bench-highlight{color:var(--cyan);font-weight:600}
+.bench-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.bench-badge.a{background:rgba(34,197,94,.15);color:var(--green)}
+.bench-badge.b{background:rgba(234,179,8,.15);color:var(--gold)}
+
+/* CTA */
+.cta{padding:100px 2rem;text-align:center;position:relative}
+.cta::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(circle,var(--cyan-dim) 0%,transparent 70%);pointer-events:none}
+.cta h2{position:relative}
+.cta-desc{font-size:16px;color:var(--muted);max-width:480px;margin:1rem auto 2rem;position:relative}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:48px 2rem;background:var(--surface)}
+.footer-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-inner p{font-size:12px;color:var(--dim)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--text)}
+
+/* Prompt chips */
+.prompt-chip{padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;text-align:left;white-space:nowrap}
+.prompt-chip:hover{border-color:var(--cyan);color:var(--text);background:var(--cyan-dim)}
+
+/* Video Embed */
+.video-embed{max-width:900px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.video-embed iframe{width:100%;height:100%;display:block}
+
+/* Download Cards */
+.download-card{padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;text-align:center;transition:all .2s var(--ease)}
+.download-card:hover{border-color:var(--cyan);transform:translateY(-3px);box-shadow:0 8px 30px rgba(6,182,212,.1)}
+
+/* Chat loading animation */
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+
+/* Responsive */
+@media(max-width:900px){
+  .features-grid,.pricing,.steps{grid-template-columns:1fr}
+  .dash-body{grid-template-columns:1fr}
+  .dash-sidebar{display:none}
+  .hero h1{font-size:36px}
+  #download .section-inner > div:first-of-type{grid-template-columns:1fr!important}
+}
+@media(max-width:640px){
+  nav{padding:0 1rem}
+  .hero{padding:60px 1rem 40px}
+  .section{padding:60px 1rem}
+  .hero-proof{flex-direction:column;align-items:center;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">ROSTR<span>.</span></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#try-it">Try It</a>
+      <a href="#download">Download</a>
+      <a href="/research">Research</a>
+      <a href="https://github.com/diamitani/rostr-agent" target="_blank">GitHub</a>
+      <a href="https://linkedin.com/in/diamitani" target="_blank">LinkedIn</a>
+      <a href="#try-it" class="btn-nav">Try Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>AI Agents That<br><span>Actually Work.</span></h1>
+  <p class="hero-sub">Production-grade agent platform with smart routing, persistent memory, and 1,000+ integrations. 9 LLM providers. Bring your own keys. Ship in minutes.</p>
+  <div class="hero-ctas">
+    <a href="#try-it" class="btn-lg btn-primary">Try It Now →</a>
+    <a href="#download" class="btn-lg btn-secondary">Download Desktop App</a>
+  </div>
+  <div class="hero-proof">
+    <div class="proof-item"><span class="dot"></span> 85% task completion rate</div>
+    <div class="proof-item"><span class="dot"></span> 9 LLM providers supported</div>
+    <div class="proof-item"><span class="dot"></span> 1,048 integrations via Composio</div>
+    <div class="proof-item"><span class="dot"></span> MIT Licensed</div>
+  </div>
+
+  <!-- Demo Video -->
+  <div class="video-embed">
+    <iframe src="https://www.youtube.com/embed/vKGtIY-MR8Y" title="ROSTR Agent Demo by Patrick Diamitani" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label">Platform</div>
+    <h2>Everything you need to ship<br>production AI agents.</h2>
+    <p class="section-desc">Not another framework to learn. A platform that works. Enter your API key, pick a model, start building.</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🧠</div>
+        <h3>PAL — Prompt Compiler</h3>
+        <p>Every text input is enhanced automatically. Vague requests become precise, structured prompts. 5-stage compilation. You type casual — the model gets perfection.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>NPAO — Smart Routing</h3>
+        <p>Necessity, Priority, Anxiety, Opportunity scoring. Tasks get routed to the right model, right skill, right handler. No more one-size-fits-all.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <h3>RAG DAL — Grounded Retrieval</h3>
+        <p>Multi-pass retrieval with source credibility scoring. 3-tier weighting. Reaches 92% confidence where single-pass stops at 68%. No hallucination.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💾</div>
+        <h3>Hub — Persistent Memory</h3>
+        <p>Agents remember across sessions. Multi-level state: session, project, organization. Knowledge compounds over time. Your agents get smarter.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔑</div>
+        <h3>BYOK — Your Keys, Your Rules</h3>
+        <p>OpenAI, Anthropic, Gemini, OpenRouter, Ollama, LM Studio, AWS Bedrock, Azure. One platform, every provider. Switch models per task.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Multi-Model Routing</h3>
+        <p>ROSTR benchmarks show: deepseek-r1 for reasoning (85%), qwen2.5-coder for speed (84%), qwen for quick tasks (71%). Auto-routes to the best model for each job.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📦</div>
+        <h3>Skills Marketplace</h3>
+        <p>6 production skills included: PAL, NPAO, JTBD Builder, Instruction Architect, PRD Builder, Diagram Builder. Upload custom .skill files. Build your own.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔗</div>
+        <h3>1,048 Integrations</h3>
+        <p>Composio-powered: Telegram, WhatsApp, Slack, Gmail, HubSpot, Salesforce, Notion, GitHub, Calendar, and 90+ more. Connect in one click.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🖥️</div>
+        <h3>Desktop + Web + API</h3>
+        <p>Electron desktop app for local-first. Vercel-powered web app for cloud. REST API for custom integrations. Pick your mode.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Setup</div>
+    <h2>Running in 60 seconds.</h2>
+    <p class="section-desc">No complex setup. No infrastructure to manage. Just add your key and go.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Add Your API Key</h3>
+        <p>Enter your OpenAI, Anthropic, or any provider key. Or use Ollama for free local models.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">Settings → API Keys → Add Provider</code>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Connect Integrations</h3>
+        <p>One-click Composio OAuth. Connect Slack, HubSpot, Gmail, WhatsApp — whatever your workflow needs.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">Integrations → Connect → OAuth</code>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Start Building</h3>
+        <p>Chat with your agent. PAL enhances every prompt. NPAO routes to the right handler. Results in seconds.</p>
+        <code style="display:block;margin-top:12px;padding:8px;background:var(--bg);border-radius:6px">"Research prospects in fintech expanding to EU"</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Integrations -->
+<section class="section" id="integrations" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Composio-Powered</div>
+    <h2>1,000+ integrations. One click.</h2>
+    <p class="section-desc">Connect your entire stack via Composio. OAuth login, instant setup, full API access from your agent.</p>
+    <div class="integrations-grid">
+      <div class="integration">💬 Slack <span class="integration-badge">LIVE</span></div>
+      <div class="integration">📱 WhatsApp <span class="integration-badge">LIVE</span></div>
+      <div class="integration">✉️ Telegram <span class="integration-badge">LIVE</span></div>
+      <div class="integration">📨 Gmail</div>
+      <div class="integration">📊 HubSpot</div>
+      <div class="integration">☁️ Salesforce</div>
+      <div class="integration">📝 Notion</div>
+      <div class="integration">🐙 GitHub</div>
+      <div class="integration">📅 Google Calendar</div>
+      <div class="integration">📋 Linear</div>
+      <div class="integration">🗂️ Airtable</div>
+      <div class="integration">💳 Stripe</div>
+      <div class="integration">📦 Jira</div>
+      <div class="integration">🔔 Discord</div>
+      <div class="integration">📁 Google Drive</div>
+      <div class="integration">🎯 Apollo</div>
+      <div class="integration">📞 Outreach</div>
+      <div class="integration">🔍 DuckDuckGo Search</div>
+      <div class="integration">📂 File System</div>
+      <div class="integration">🤖 Signal</div>
+      <div class="integration" style="background:var(--cyan-dim);border-color:rgba(6,182,212,.3)">+1,000 more via Composio</div>
+    </div>
+  </div>
+</section>
+
+<!-- Benchmarks -->
+<section class="section" id="benchmarks" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Performance</div>
+    <h2>Real benchmarks. Real models.</h2>
+    <p class="section-desc">We tested ROSTR across 5 local models on real tasks — PAL compilation, NPAO routing, RAG grounding, Hub synthesis, and full pipeline orchestration.</p>
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Provider</th>
+          <th>Score</th>
+          <th>Latency</th>
+          <th>Best For</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bench-highlight">deepseek-r1:14b</td>
+          <td>Ollama</td>
+          <td class="bench-highlight">85.1%</td>
+          <td>33s</td>
+          <td>Reasoning, synthesis</td>
+          <td><span class="bench-badge a">A+</span></td>
+        </tr>
+        <tr>
+          <td class="bench-highlight">qwen2.5-coder:14b</td>
+          <td>Ollama</td>
+          <td class="bench-highlight">84.4%</td>
+          <td>15s</td>
+          <td>Default (best balance)</td>
+          <td><span class="bench-badge a">A</span></td>
+        </tr>
+        <tr>
+          <td>qwen:latest</td>
+          <td>Ollama</td>
+          <td>71.2%</td>
+          <td>3s</td>
+          <td>Quick PAL enhance</td>
+          <td><span class="bench-badge b">B+</span></td>
+        </tr>
+        <tr>
+          <td>deepseek-coder:6.7b</td>
+          <td>Ollama</td>
+          <td>67.9%</td>
+          <td>5s</td>
+          <td>Lightweight / mobile</td>
+          <td><span class="bench-badge b">B+</span></td>
+        </tr>
+        <tr>
+          <td>qwen3.5:latest</td>
+          <td>Ollama</td>
+          <td>57.7%</td>
+          <td>98s</td>
+          <td>Not recommended</td>
+          <td><span class="bench-badge" style="background:rgba(239,68,68,.15);color:var(--red)">C</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--dim);margin-top:16px">Evaluated July 2026. 5 tasks per model (Intent Compilation, NPAO Routing, RAG Grounding, Hub Synthesis, Full Pipeline). Scoring: automated criteria matching + structure analysis. <a href="https://github.com/diamitani/rostr-agent/blob/main/LLM_BENCHMARK_REPORT.md" style="color:var(--cyan)">Full methodology →</a></p>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Pricing</div>
+    <h2>Simple, transparent pricing.</h2>
+    <p class="section-desc">Self-host for free. Or use our cloud with managed infrastructure, auto-scaling, and zero ops.</p>
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-name">Self-Hosted</div>
+        <div class="price-amount">$0<span>/forever</span></div>
+        <p class="price-desc">Run on your machine. Full access. No limits.</p>
+        <ul class="price-features">
+          <li>All features unlocked</li>
+          <li>Desktop app (Electron)</li>
+          <li>Local Ollama models</li>
+          <li>Your own API keys</li>
+          <li>Community support</li>
+          <li>MIT licensed</li>
+        </ul>
+        <a href="https://github.com/diamitani/rostr-agent" class="price-btn ghost">Clone Repo →</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">Cloud Pro</div>
+        <div class="price-amount">$20<span>/month</span></div>
+        <p class="price-desc">Managed cloud. Zero ops. Scales automatically.</p>
+        <ul class="price-features">
+          <li>Everything in Self-Hosted</li>
+          <li>Managed AWS infrastructure</li>
+          <li>Web dashboard (app.rostragent.com)</li>
+          <li>1,048 Composio integrations</li>
+          <li>Persistent Hub storage</li>
+          <li>Priority support</li>
+          <li>$0.10/1K executions after 1000 free</li>
+        </ul>
+        <a href="https://app.rostragent.com" class="price-btn primary">Start Free Trial →</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amount">Custom</div>
+        <p class="price-desc">For teams that need dedicated infrastructure.</p>
+        <ul class="price-features">
+          <li>Everything in Cloud Pro</li>
+          <li>Dedicated AWS deployment</li>
+          <li>SSO / SAML</li>
+          <li>Custom skills development</li>
+          <li>SLA guarantee</li>
+          <li>White-label option</li>
+        </ul>
+        <a href="mailto:patrick.diamitani@gmail.com" class="price-btn ghost">Contact Sales →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Try It — Working Chat -->
+<section class="section" id="try-it" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Live Demo</div>
+    <h2>Try ROSTR right now.</h2>
+    <p class="section-desc">Enter your OpenAI or Anthropic API key below. Messages go directly from your browser to the provider — we never see or store your key.</p>
+
+    <div id="app-container" style="margin-top:2rem;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface);max-width:800px">
+      <!-- Key Setup -->
+      <div id="key-setup" style="padding:32px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end">
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:6px">Provider</label>
+            <select id="provider-select" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;cursor:pointer">
+              <option value="openai">OpenAI (GPT-4o)</option>
+              <option value="anthropic">Anthropic (Claude Sonnet)</option>
+            </select>
+          </div>
+          <div style="flex:2;min-width:280px">
+            <label style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:6px">API Key</label>
+            <input id="api-key-input" type="password" placeholder="sk-... or sk-ant-..." style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;font-family:var(--mono)">
+          </div>
+          <button onclick="startChat()" style="padding:10px 20px;background:var(--cyan);border:none;border-radius:8px;color:#000;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap">Connect →</button>
+        </div>
+        <p style="font-size:11px;color:var(--dim);margin-top:12px">Your key is stored in browser memory only (sessionStorage). Never sent to our servers. <a href="https://github.com/diamitani/rostr-agent" style="color:var(--cyan)">Verify source →</a></p>
+      </div>
+
+      <!-- Chat Interface (hidden until key entered) -->
+      <div id="chat-ui" style="display:none">
+        <div style="height:36px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+          <span style="font-size:11px;color:var(--muted)" id="status-text">Connected</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--dim)" id="model-label">gpt-4o</span>
+        </div>
+        <div id="chat-messages" style="min-height:300px;max-height:450px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <div class="dash-msg ai">Hello! I'm ROSTR — your AI agent with PAL-enhanced prompting. PAL compiles every message into a structured plan before calling the model. Try one of these:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            <button onclick="usePrompt(this)" class="prompt-chip">Research Stripe and draft a cold email to their VP of Sales</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Create a marketing plan for Artispreneur launch</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Build a web app for a music booking platform</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Write a competitive battle card vs Salesforce</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Summarize last quarter's pipeline and flag risks</button>
+            <button onclick="usePrompt(this)" class="prompt-chip">Draft a product requirements doc for a ROSTR Hub dashboard</button>
+          </div>
+        </div>
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
+          <input id="chat-input" type="text" placeholder="Ask ROSTR anything..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')sendMessage()">
+          <button onclick="sendMessage()" style="background:var(--cyan);border:none;border-radius:8px;padding:12px 20px;color:#000;font-weight:600;font-size:13px;cursor:pointer">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Download -->
+<section class="section" id="download" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Desktop App</div>
+    <h2>Download ROSTR Agent.</h2>
+    <p class="section-desc">Full agent platform on your desktop. Local models via Ollama (free), or bring your own cloud keys. No internet required for local mode.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:2.5rem;max-width:700px">
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🍎</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">macOS</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">Apple Silicon + Intel</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download .dmg →</div>
+      </a>
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🪟</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Windows</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">Windows 10+</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download .exe →</div>
+      </a>
+      <a href="https://github.com/diamitani/rostr-agent/releases/latest" class="download-card" style="text-decoration:none">
+        <div style="font-size:32px;margin-bottom:8px">🐧</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Linux</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">AppImage / .deb</div>
+        <div style="font-size:11px;color:var(--cyan);margin-top:8px">Download →</div>
+      </a>
+    </div>
+
+    <div style="margin-top:2rem;padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px;max-width:700px">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Or install via CLI:</div>
+      <code style="font-family:var(--mono);font-size:13px;color:var(--cyan);display:block;padding:8px 0">git clone https://github.com/diamitani/rostr-agent.git && cd rostr-agent && pip install -e .</code>
+    </div>
+
+    <p style="font-size:12px;color:var(--dim);margin-top:16px">Desktop app requires Python 3.11+. Local models: install <a href="https://ollama.ai" style="color:var(--cyan)">Ollama</a> and run <code style="font-family:var(--mono);font-size:11px;color:var(--cyan)">ollama pull qwen2.5-coder:14b</code></p>
+  </div>
+</section>
+
+<!-- Research Teaser -->
+<section class="section" id="research" style="border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Research-Backed</div>
+    <h2>Built on peer-reviewed research.</h2>
+    <p class="section-desc">ROSTR is documented in two published papers with reproducible benchmarks. Every claim backed by real data.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:2.5rem;max-width:800px">
+      <a href="/research" style="text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;transition:border-color .2s;display:block" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:10px">Research Paper</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">ROSTR: A Multi-Layered Intelligence Framework</div>
+        <div style="font-size:13px;color:var(--muted)">+15.2pp task completion · +19.7pp coherence · 11 benchmark tasks</div>
+        <div style="font-size:12px;color:var(--cyan);margin-top:12px">Read paper → </div>
+      </a>
+      <a href="/research#benchmarks" style="text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;transition:border-color .2s;display:block" onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:10px">LLM Benchmark</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">5-Model Benchmark: deepseek vs qwen vs local</div>
+        <div style="font-size:13px;color:var(--muted)">deepseek-r1 85.1% · qwen2.5-coder 84.4% · 5 tasks · Smart routing strategy</div>
+        <div style="font-size:12px;color:var(--cyan);margin-top:12px">See benchmarks →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <h2>Start building in 60 seconds.</h2>
+  <p class="cta-desc">No credit card. No account needed. Enter your API key above and go — or self-host free forever.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
+    <a href="#try-it" class="btn-lg btn-primary">Try It Now →</a>
+    <a href="https://github.com/diamitani/rostr-agent" class="btn-lg btn-secondary">Star on GitHub</a>
+    <a href="/research" class="btn-lg btn-secondary">Read the Research</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <p>ROSTR v1.0 · MIT License · Patrick Diamitani · Diamitani Industries © 2026</p>
+    <div class="footer-links">
+      <a href="https://github.com/diamitani/rostr-agent">GitHub</a>
+      <a href="/research">Research</a>
+      <a href="https://zenodo.org/records/19550414">Zenodo</a>
+      <a href="https://linkedin.com/in/diamitani">LinkedIn</a>
+      <a href="mailto:patrick.diamitani@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ROSTR API endpoint — set to your App Runner URL once deployed
+// Falls back to direct browser call if API is not available
+const ROSTR_API = 'https://api.rostragent.com';
+
+let apiKey = '';
+let provider = 'openai';
+let conversationHistory = [];
+let apiOnline = false;
+
+// Check if ROSTR backend is live
+fetch(ROSTR_API + '/health').then(r => {
+  if (r.ok) { apiOnline = true; updateStatusIndicator(true); }
+}).catch(() => { apiOnline = false; });
+
+function updateStatusIndicator(online) {
+  const el = document.getElementById('status-text');
+  const dot = document.querySelector('#chat-ui .dash-bar div');
+  if (el) el.textContent = online ? 'Connected via ROSTR API' : 'Connected (direct mode)';
+  if (dot) dot.style.background = online ? 'var(--cyan)' : 'var(--green)';
+}
+
+function startChat() {
+  apiKey = document.getElementById('api-key-input').value.trim();
+  provider = document.getElementById('provider-select').value;
+
+  if (!apiKey) {
+    document.getElementById('api-key-input').style.borderColor = 'var(--red)';
+    return;
+  }
+
+  sessionStorage.setItem('rostr_key', apiKey);
+  sessionStorage.setItem('rostr_provider', provider);
+
+  document.getElementById('key-setup').style.display = 'none';
+  document.getElementById('chat-ui').style.display = 'block';
+  document.getElementById('model-label').textContent = provider === 'openai' ? 'gpt-4o' : 'claude-sonnet-4-20250514';
+  document.getElementById('chat-input').focus();
+
+  conversationHistory = [];
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  appendMessage(msg, 'user');
+
+  const typingEl = showTyping();
+
+  try {
+    let response, enhanced = null;
+
+    if (apiOnline) {
+      // Route through ROSTR backend — PAL + NPAO + full pipeline
+      const res = await fetch(ROSTR_API + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          provider: provider,
+          api_key: apiKey,
+          history: conversationHistory,
+          workspace_id: 'web-demo'
+        })
+      });
+      if (!res.ok) throw new Error('API error ' + res.status);
+      const data = await res.json();
+      response = data.message;
+      enhanced = data.enhanced_prompt !== msg ? data.enhanced_prompt : null;
+      conversationHistory.push({ role: 'user', content: msg });
+      conversationHistory.push({ role: 'assistant', content: response });
+    } else {
+      // Fallback: direct browser call (no ROSTR pipeline)
+      conversationHistory.push({ role: 'user', content: msg });
+      if (provider === 'openai') {
+        response = await callOpenAI(conversationHistory);
+      } else {
+        response = await callAnthropic(conversationHistory);
+      }
+      conversationHistory.push({ role: 'assistant', content: response });
+    }
+
+    typingEl.remove();
+    appendMessage(response, 'ai');
+
+    // Show PAL enhancement badge if prompt was enhanced
+    if (enhanced) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:10px;color:var(--gold);padding:4px 8px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.2);border-radius:6px;margin-top:-8px;align-self:flex-start';
+      badge.textContent = '✨ PAL enhanced your prompt';
+      badge.title = enhanced;
+      document.getElementById('chat-messages').appendChild(badge);
+    }
+
+  } catch (err) {
+    typingEl.remove();
+    appendMessage('Error: ' + (err.message || 'Request failed. Check your API key.'), 'ai');
+  }
+}
+
+async function callOpenAI(messages) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are ROSTR Agent, a helpful AI assistant.' }, ...messages], max_tokens: 1024 })
+  });
+  if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
+  return (await res.json()).choices[0].message.content;
+}
+
+async function callAnthropic(messages) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, system: 'You are ROSTR Agent, a helpful AI assistant.', messages })
+  });
+  if (!res.ok) throw new Error((await res.json()).error?.message || 'API error ' + res.status);
+  return (await res.json()).content[0].text;
+}
+
+function appendMessage(text, type) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'dash-msg ' + type;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'dash-msg ai';
+  div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function usePrompt(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  document.getElementById('chat-input').focus();
+}
+
+// Restore session
+(function() {
+  const savedKey = sessionStorage.getItem('rostr_key');
+  const savedProvider = sessionStorage.getItem('rostr_provider');
+  if (savedKey) {
+    apiKey = savedKey;
+    provider = savedProvider || 'openai';
+    document.getElementById('api-key-input').value = savedKey;
+    document.getElementById('provider-select').value = provider;
+  }
+})();
+</script>
+</body>
+</html>

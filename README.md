@@ -1,10 +1,9 @@
-# 🧠 ROSTR Agent — The Self-Improving Multi-Agent Framework
+# ROSTR Agent — Production AI Agent Platform
 
 **Runtime · Orchestration · State · Tools · Reference**
 
 <div align="center">
 
-[![PyPI](https://img.shields.io/badge/pypi-rostr--agent-a78bfa?style=for-the-badge)](https://pypi.org/project/rostr-agent)
 [![License: MIT](https://img.shields.io/badge/license-MIT-34d399?style=for-the-badge)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-a78bfa?style=for-the-badge)](https://python.org)
 [![GitHub](https://img.shields.io/badge/github-diamitani/rostr--agent-22d3ee?style=for-the-badge)](https://github.com/diamitani/rostr-agent)
@@ -15,172 +14,166 @@
 
 ## What Is ROSTR Agent?
 
-ROSTR Agent is a **production-grade multi-agent framework** that fuses the power of the Hermes Agent runtime with the **ROSTR architecture** — a unified system for agent orchestration, knowledge retrieval, and persistent state management.
+ROSTR Agent is a **production-grade AI agent platform** with smart model routing, persistent memory, and 1,048 integrations via Composio. Bring your own keys — supports 9 LLM providers.
 
-It's the same self-improving AI agent you know (skills from experience, persistent memory, 20+ messaging platforms, any LLM provider), now with **first-class multi-agent orchestration built in**.
+**Website:** [rostragent.com](https://rostragent.com)
 
-### What makes ROSTR Agent different
+### Key Numbers
 
-- **ROSTR built-in** — PAL (Prompt Abstraction Layer), NPAO (Navigate/Prioritize/Allocate/Orchestrate), RAG DAL (Dynamic Acquisition Layer), and Rostr Hub (persistent state) are first-class CLI commands and agent tools
-- **Self-improving through skills** — learns from experience by saving reusable procedures as skills
-- **Persistent memory across sessions** — remembers who you are, your preferences, and lessons learned
-- **Multi-platform gateway** — same agent on Telegram, Discord, Slack, WhatsApp, iMessage, Signal, and 15+ more
-- **Provider-agnostic** — swap models and providers mid-workflow with 20+ providers supported
-- **Extensible** — plugins, MCP servers, custom tools, webhook triggers, cron scheduling
+| Metric | Value |
+|--------|-------|
+| LLM Providers | **9** (OpenAI, Anthropic, Gemini, OpenRouter, AWS Bedrock, Azure, LM Studio, Ollama, Nous) |
+| Integrations | **1,048** via Composio (Slack, Gmail, HubSpot, Notion, Linear, Jira + 1,000 more) |
+| Packaged Skills | **6** (.skill files: PAL, NPAO, JTBD Builder, Instruction Architect, PRD Builder, Diagram Builder) |
+| Skill Directories | **27** (pre-built skill templates) |
+| Tests Passing | **202** (70 PAL + 83 Hub + 49 Orchestrator) |
+| Task Completion | **88.6%** (vs 76.9% Hermes baseline) |
 
----
+### Multi-LLM Benchmark (July 2026)
 
-## The ROSTR Architecture
+| Rank | Model | Provider | Score | Latency |
+|------|-------|----------|-------|---------|
+| 1 | deepseek-r1:14b | Ollama | 85.1% | 33s |
+| 2 | qwen2.5-coder:14b | Ollama | 84.4% | 15s |
+| 3 | qwen:latest | Ollama | 71.2% | 3s |
+| 4 | deepseek-coder:6.7b | Ollama | 67.9% | 5s |
+| 5 | qwen3.5:latest | Ollama | 57.7% | 98s |
 
-ROSTR Agent ships with four integrated pillars:
-
-| Component | Role | CLI | Agent Tool |
-|-----------|------|-----|------------|
-| **PAL** — Prompt Abstraction Layer | Compiles NL → typed Agent Manifest | `hermes pal compile` | `pal_compile` |
-| **NPAO** — Decision Engine | 5D phase + 4D priority scoring | `hermes npao classify` | `npao_classify` |
-| **RAG DAL** — Knowledge Engine | 3-tier multi-pass retrieval | `hermes ragdal search` | `ragdal_search` |
-| **Rostr Hub** — Agent OS | 4-level state + knowledge compounding | `hermes hub {register,list,decide,learn,compound,search}` | `rostr_hub` |
-
-```
-User Input → PAL (Compiler) → NPAO (Orchestrator) → Agents + RAG DAL + Hub → Output
-```
-
----
-
-## Quick Start
-
-```bash
-# Clone
-git clone https://github.com/diamitani/rostr-agent.git
-cd rostr-agent
-
-# Install
-pip install -e .
-
-# Run
-rostr-agent
-
-# Or use the ROSTR CLI directly
-rostr-agent pal compile "Research best RAG architectures for production"
-rostr-agent npao classify --revenue "Fix the auth bug in production"
-rostr-agent ragdal search "Latest advances in multi-agent orchestration"
-rostr-agent hub register --name "Builder Agent" --type builder
-```
-
----
-
-## ROSTR CLI Reference
-
-### PAL — Prompt Abstraction Layer
-
-```bash
-# Compile natural language into an agent manifest
-hermes pal compile "Build a Python REST API for user management"
-hermes pal compile --context '{"project":"myapp"}' "Research vector DBs"
-hermes pal compile --json "Analyze competitor GTM strategies"
-```
-
-Output: domain, agent type, model, phase, urgency, ambiguity score, full YAML manifest.
-
-### NPAO — Navigate, Prioritize, Allocate, Orchestrate
-
-```bash
-# Classify a task through the 5D phase + 4D priority system
-hermes npao classify "Fix the authentication bug"
-hermes npao classify --domain debug --blocked 3 --revenue "Fix auth bug"
-hermes npao classify --hours 1.5 --user "Add dark mode toggle"
-```
-
-Output: workflow phase, 4D priority score, allocation status, completion criteria, orchestration pattern.
-
-### RAG DAL — Dynamic Acquisition Layer
-
-```bash
-# Multi-pass knowledge retrieval with credibility scoring
-hermes ragdal search "What are best practices for RAG pipelines?"
-hermes ragdal search --tier tier1 "Attention mechanisms survey"
-```
-
-Output: sub-topics, confidence per topic, sources used, passes completed, knowledge gaps.
-
-### Rostr Hub — Persistent Reference Architecture
-
-```bash
-# Register an agent
-hermes hub register --name "Research Agent" --type researcher --phases PreD
-
-# List all agents
-hermes hub list
-hermes hub list --type builder
-
-# Log a key decision
-hermes hub decide --context "Database choice" --decision "PostgreSQL 17" --rationale "JSONB + vector support"
-
-# Log a learning
-hermes hub learn --context "Deploy pipeline" --insight "Always run staging smoke tests" --tags deploy,testing
-
-# Knowledge compounding report
-hermes hub compound
-
-# Search past learnings
-hermes hub search "deployment"
-```
-
----
-
-## Agent Tools
-
-ROSTR Agent exposes five new tools that agents can call during conversations:
-
-| Tool | What it does |
-|------|-------------|
-| `pal_compile` | Compile NL intent → typed agent manifest with domain, model, tools, behavior |
-| `npao_classify` | Classify task into 5D phase + compute 4D priority score |
-| `ragdal_search` | Multi-pass knowledge retrieval with 3-tier source credibility |
-| `rostr_hub` | Register agents, log decisions/learnings, compound knowledge |
-| `rostr_pipeline` | Full PAL → NPAO pipeline in one call |
+[Full benchmark report →](LLM_BENCHMARK_REPORT.md)
 
 ---
 
 ## Architecture
 
 ```
-rostr-agent/
-├── rostr/                     # ROSTR core (PAL, NPAO, RAG DAL, Hub)
-├── tools/
-│   └── rostr_tools.py         # ROSTR tool registration
-├── hermes_cli/
-│   ├── main.py                # CLI entry point (+ ROSTR subcommands)
-│   └── rostr_commands.py      # ROSTR CLI implementations
-├── agent/                     # Agent core (prompt builder, memory, routing)
-├── gateway/                   # Multi-platform messaging gateway
-├── toolsets.py                # Toolset definitions (ROSTR tools included)
-├── cli.py                     # Interactive CLI loop
-├── run_agent.py               # Core conversation loop
-└── tools/                     # 60+ built-in tools
+User Input → PAL (Compiler) → NPAO (Router) → Agents + RAG DAL + Hub → Output
+```
+
+| Component | Role | Description |
+|-----------|------|-------------|
+| **PAL** — Prompt Abstraction Layer | Compiler | 5-stage pipeline: Intent → Context → Enhancement → Routing → Manifest |
+| **NPAO** — Decision Engine | Router | 4D scoring (Necessity=0.35, Priority=0.25, Anxiety=0.25, Opportunity=0.15) |
+| **RAG DAL** — Knowledge Engine | Retrieval | 3-tier multi-pass retrieval with credibility scoring |
+| **Hub** — Persistent State | Storage | SQLite WAL, 6-level inheritance (session→project→team→org→agent→global) |
+
+### 9 LLM Providers (BYOK)
+
+| Provider | Type | Notes |
+|----------|------|-------|
+| OpenAI | Cloud API | GPT-4o, GPT-4-turbo |
+| Anthropic | Cloud API | Claude Sonnet, Opus, Haiku |
+| Google Gemini | Cloud API | Gemini Pro, Flash |
+| OpenRouter | Cloud API | 100+ models via single key |
+| AWS Bedrock | Cloud API | Enterprise, IAM auth |
+| Azure OpenAI | Cloud API | Enterprise, AD auth |
+| LM Studio | Local | Any GGUF model |
+| Ollama | Local | Any GGUF model, free |
+| Nous Research | Cloud API | Hermes models |
+
+### Smart Routing
+
+NPAO scores route to the optimal model per-task:
+- **Necessity > 80**: deepseek-r1:14b (highest quality)
+- **Priority > 70**: qwen2.5-coder:14b (best balance)
+- **Quick tasks**: qwen:latest (sub-3s)
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/diamitani/rostr-agent.git
+cd rostr-agent
+pip install -e .
+```
+
+### Use the PAL Compiler
+
+```python
+from rostr.pal.compiler import PALCompiler
+
+compiler = PALCompiler()
+manifest = compiler.compile("Write a cold email to HR tech prospects")
+# Returns: AgentManifest with domain, model, tools, behavior, routing
+```
+
+### Use the Hub
+
+```python
+from rostr.hub.store import SQLiteHubStore
+
+hub = SQLiteHubStore("my_agent.db")
+hub.save_state("session/current", {"task": "outreach", "progress": 0.5})
+state = hub.resolve_state("session/current")  # Inherits from parent scopes
+```
+
+### Use Composio Integrations
+
+```python
+from rostr.integrations.composio_client import ComposioClient
+
+client = ComposioClient()  # Uses COMPOSIO_API_KEY env var
+apps = client.list_apps()  # Returns 1,048 available integrations
+client.initiate_connection("user-123", "slack")  # OAuth flow
+client.execute_action("user-123", "SLACK_SEND_MESSAGE", {"channel": "#general", "text": "Hello"})
 ```
 
 ---
 
-## Research
+## Project Structure
 
-**"ROSTR: A Unified Architecture for Production-Grade Multi-Agent Systems with Phase-Aware Orchestration and Persistent Knowledge Compounding"**
-
-Patrick Diamitani · April 2026 · 22,000 words · 27 references
-
-- **arXiv**: [2604.XXXXX](https://arxiv.org/abs/2604.XXXXX)
-- **Keywords**: multi-agent systems, agent orchestration, RAG, prompt engineering, knowledge management, workflow automation
+```
+rostr-agent/
+├── rostr/
+│   ├── pal/                   # PAL Compiler (5-stage pipeline, 70 tests)
+│   ├── hub/                   # Hub Persistence (SQLite WAL, 83 tests)
+│   ├── integrations/          # Composio client (1,048 apps)
+│   ├── npao.py                # NPAO 4D router
+│   ├── orchestrator.py        # Full pipeline (49 tests)
+│   ├── llm_provider.py        # 9-provider BYOK abstraction
+│   ├── api_server.py          # FastAPI server
+│   └── pal_skill.py           # PAL as a skill
+├── apps/
+│   └── cloud-web/             # Next.js 15 cloud app (Vercel AI SDK)
+├── skills/                    # 6 packaged .skill files + 27 templates
+├── index.html                 # Landing page (rostragent.com)
+├── BUILD_PLAN.md              # 5-phase production deployment plan
+├── TECHNICAL_PAPER.md         # Technical paper (no hallucinations)
+├── LLM_BENCHMARK_REPORT.md    # Multi-model benchmark results
+└── vercel.json                # Static site deployment config
+```
 
 ---
 
-## The ROSTR Ecosystem
+## Deployment
 
-| Site | URL | Stack |
-|------|-----|-------|
-| ROSTR Agent (this repo) | `github.com/diamitani/rostr-agent` | Python, Hermes + ROSTR |
-| SaaS Landing | `rostr-framework.vercel.app` | HTML, ethereal glass |
-| Platform Dashboard | `platform-virid-psi.vercel.app` | Next.js 15 |
-| PAL Docs | `pal-site-three.vercel.app` | Docusaurus 3 |
+### Landing Page (rostragent.com)
+Static HTML deployed via Vercel. No build step required.
+
+```json
+// vercel.json
+{
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "echo 'Static site - no install needed'",
+  "outputDirectory": "."
+}
+```
+
+### Cloud Web App (app.rostragent.com)
+Next.js 15 with Vercel AI SDK, streaming chat, auth, billing, integrations.
+
+See [BUILD_PLAN.md](BUILD_PLAN.md) for full deployment steps.
+
+---
+
+## Pricing
+
+| Plan | Price | Includes |
+|------|-------|----------|
+| Free | $0/mo | 10 executions/day, 3 skills, community support |
+| Pro | $20/mo | Unlimited executions, all skills, 1,048 integrations, priority support |
+| Enterprise | Custom | Dedicated infra, SLA, custom skills, team workspaces |
 
 ---
 
@@ -188,4 +181,4 @@ Patrick Diamitani · April 2026 · 22,000 words · 27 references
 
 MIT © Patrick Diamitani, 2026
 
-Built on [Hermes Agent](https://github.com/NousResearch/hermes-agent) by Nous Research. ROSTR architecture and multi-agent orchestration by Patrick Diamitani.
+Built on [Hermes Agent](https://github.com/NousResearch/hermes-agent) by Nous Research. ROSTR architecture, PAL compiler, Hub persistence, and Composio integration by Patrick Diamitani.

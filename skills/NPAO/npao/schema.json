@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "DomainScore": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": ["code", "design", "content", "sales", "ops", "idea", "debug", "deploy"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence score 0-1"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why this domain scored this confidence"
+        }
+      },
+      "required": ["domain", "confidence", "reason"]
+    },
+    "Match": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "What text pattern matched"
+        },
+        "domains": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["pattern", "domains", "score"]
+    },
+    "RoutingTrace": {
+      "type": "object",
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/Match"}
+        },
+        "resolution": {
+          "type": "string",
+          "description": "How conflicts were resolved"
+        },
+        "input_entropy": {
+          "type": "number",
+          "description": "How ambiguous the input was (0-1)"
+        }
+      },
+      "required": ["matches", "resolution"]
+    },
+    "FallbackRoute": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Lower = try first"
+        }
+      },
+      "required": ["model", "reason"]
+    },
+    "EnhancedAgentManifest": {
+      "type": "object",
+      "properties": {
+        "primary_domain": {
+          "type": "string"
+        },
+        "secondary_domains": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/DomainScore"}
+        },
+        "confidence_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ambiguity_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "routing_trace": {
+          "$ref": "#/definitions/RoutingTrace"
+        },
+        "fallback_routes": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/FallbackRoute"}
+        },
+        "sub_tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "task": {"type": "string"},
+              "domain": {"type": "string"},
+              "confidence": {"type": "number"}
+            }
+          },
+          "description": "Multi-intent requests split into sub-tasks"
+        },
+        "recommendation": {
+          "type": "string",
+          "description": "High-level routing recommendation"
+        }
+      },
+      "required": ["primary_domain", "confidence_score", "ambiguity_level", "routing_trace"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "object",
+      "properties": {
+        "raw_request": {
+          "type": "string"
+        },
+        "pal_manifest": {
+          "type": "object",
+          "description": "Optional PAL output to enhance"
+        },
+        "user_history": {
+          "type": "array",
+          "description": "Prior routing decisions for context"
+        }
+      },
+      "required": ["raw_request"]
+    },
+    "output": {
+      "$ref": "#/definitions/EnhancedAgentManifest"
+    }
+  }
+}

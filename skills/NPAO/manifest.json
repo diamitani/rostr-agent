@@ -1,0 +1,55 @@
+{
+  "name": "NPAO",
+  "version": "1.0.0",
+  "title": "Nuanced Prompt Abstraction Orchestrator",
+  "description": "Advanced multi-agent orchestration layer that extends PAL with nuanced confidence scoring, ambiguity detection, fallback routing, and multi-intent task splitting.",
+  "author": "Patrick Diamitani",
+  "license": "MIT",
+  "entrypoint": "npao/main.py",
+  "schema": "npao/schema.json",
+  "dependencies_on": ["PAL"],
+  "stages": [
+    "Domain Scoring",
+    "Domain Ranking",
+    "Multi-Intent Detection",
+    "Ambiguity Computation",
+    "Manifest Generation"
+  ],
+  "inputs": {
+    "raw_request": "Natural language user request (string)",
+    "pal_manifest": "Optional PAL output to enhance (object)",
+    "user_history": "Optional prior routing decisions (array)"
+  },
+  "outputs": {
+    "EnhancedAgentManifest": {
+      "primary_domain": "Highest confidence domain match",
+      "secondary_domains": "List of other matches with confidence scores",
+      "confidence_score": "0-1 confidence in primary domain",
+      "ambiguity_level": "low|medium|high",
+      "routing_trace": "Full trace of routing decision",
+      "fallback_routes": "Ranked fallback LLMs",
+      "sub_tasks": "Multi-intent requests split into tasks",
+      "recommendation": "High-level routing recommendation"
+    }
+  },
+  "dependencies": [
+    "anthropic>=1.40",
+    "openai>=1.50",
+    "requests>=2.30",
+    "pydantic>=2.0",
+    "numpy>=1.20",
+    "pyyaml>=6.0"
+  ],
+  "tags": [
+    "agent",
+    "orchestration",
+    "multi-agent",
+    "confidence-scoring",
+    "routing",
+    "ambiguity-detection",
+    "fallback-routing",
+    "multi-intent"
+  ],
+  "usage": "npao = NPAO(); manifest = npao.orchestrate('your request here'); print(json.dumps(manifest, indent=2))",
+  "test_command": "python tests/test_npao.py"
+}

@@ -1,0 +1,134 @@
+{
+  "timestamp": "2026-07-21T20:27:30",
+  "models_tested": 6,
+  "tasks_per_model": 5,
+  "rankings": [
+    {
+      "rank": 1,
+      "model": "deepseek-r1:14b",
+      "provider": "ollama",
+      "score_pct": 85.1,
+      "avg_latency_ms": 33217.0,
+      "scores_by_task": {
+        "pal_compile": 58.3,
+        "npao_route": 88.0,
+        "ragdal_retrieve": 100.0,
+        "hub_synthesis": 92.0,
+        "full_pipeline": 86.7
+      },
+      "strengths": [
+        "ragdal_retrieve",
+        "hub_synthesis"
+      ],
+      "weaknesses": []
+    },
+    {
+      "rank": 2,
+      "model": "qwen2.5-coder:14b",
+      "provider": "ollama",
+      "score_pct": 84.4,
+      "avg_latency_ms": 15374.0,
+      "scores_by_task": {
+        "pal_compile": 58.3,
+        "npao_route": 88.0,
+        "ragdal_retrieve": 96.7,
+        "hub_synthesis": 92.0,
+        "full_pipeline": 86.7
+      },
+      "strengths": [
+        "ragdal_retrieve",
+        "hub_synthesis"
+      ],
+      "weaknesses": []
+    },
+    {
+      "rank": 3,
+      "model": "qwen:latest",
+      "provider": "ollama",
+      "score_pct": 71.2,
+      "avg_latency_ms": 2910.0,
+      "scores_by_task": {
+        "pal_compile": 44.3,
+        "npao_route": 88.0,
+        "ragdal_retrieve": 60.0,
+        "hub_synthesis": 87.2,
+        "full_pipeline": 75.6
+      },
+      "strengths": [
+        "npao_route",
+        "hub_synthesis"
+      ],
+      "weaknesses": [
+        "pal_compile"
+      ]
+    },
+    {
+      "rank": 4,
+      "model": "deepseek-coder:6.7b",
+      "provider": "ollama",
+      "score_pct": 67.9,
+      "avg_latency_ms": 4585.0,
+      "scores_by_task": {
+        "pal_compile": 58.1,
+        "npao_route": 83.2,
+        "ragdal_retrieve": 80.0,
+        "hub_synthesis": 84.0,
+        "full_pipeline": 39.9
+      },
+      "strengths": [
+        "hub_synthesis",
+        "npao_route"
+      ],
+      "weaknesses": [
+        "full_pipeline"
+      ]
+    },
+    {
+      "rank": 5,
+      "model": "qwen3.5:latest",
+      "provider": "ollama",
+      "score_pct": 57.7,
+      "avg_latency_ms": 97583.0,
+      "scores_by_task": {
+        "pal_compile": 69.8,
+        "npao_route": 3.2,
+        "ragdal_retrieve": 100.0,
+        "hub_synthesis": 23.2,
+        "full_pipeline": 86.7
+      },
+      "strengths": [
+        "ragdal_retrieve",
+        "full_pipeline"
+      ],
+      "weaknesses": [
+        "hub_synthesis",
+        "npao_route"
+      ]
+    },
+    {
+      "rank": 6,
+      "model": "claude-haiku-4-5-20251001",
+      "provider": "anthropic",
+      "score_pct": 0,
+      "avg_latency_ms": 0,
+      "scores_by_task": {
+        "pal_compile": 0,
+        "npao_route": 0,
+        "ragdal_retrieve": 0,
+        "hub_synthesis": 0,
+        "full_pipeline": 0
+      },
+      "strengths": [],
+      "weaknesses": [
+        "hub_synthesis",
+        "full_pipeline"
+      ]
+    }
+  ],
+  "winner": {
+    "model": "deepseek-r1:14b",
+    "provider": "ollama",
+    "score": 85.1,
+    "recommendation": "Use deepseek-r1:14b as the default ROSTR backend for best quality."
+  }
+}

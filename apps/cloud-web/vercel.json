@@ -1,0 +1,25 @@
+{
+  "env": [
+    "ANTHROPIC_API_KEY",
+    "POSTGRES_URLPGSQL",
+    "KV_URL",
+    "KV_REST_API_URL",
+    "KV_REST_API_TOKEN",
+    "STRIPE_PUBLIC_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_PLAN_PRO_ID",
+    "JWT_SECRET",
+    "NEXT_PUBLIC_API_URL",
+    "NEXT_PUBLIC_APP_URL"
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "regions": ["sfo1", "iad1"],
+  "functions": {
+    "app/api/**": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
+}
