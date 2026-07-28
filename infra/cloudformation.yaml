@@ -1,0 +1,354 @@
+# ROSTR Agent AWS Infrastructure
+# AWS CDK — Per-user S3 workspace buckets + Agent Core + API Gateway
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "ROSTR Agent Cloud Backend — S3 Workspaces + API Gateway + ECS Fargate"
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: "rostragent.com"
+    Description: "Root domain for the ROSTR Agent API"
+  
+  ContainerImage:
+    Type: String
+    Default: "diamitani/rostr-agent:latest"
+    Description: "Docker image for the backend"
+  
+  WorkspaceBucketPrefix:
+    Type: String
+    Default: "rostr-workspace"
+    Description: "Prefix for per-user S3 workspace buckets"
+
+Resources:
+  # ── ECS Cluster ──────────────────────────────────────────────────────────
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: rostr-agent-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+  
+  # ── Backend Service ──────────────────────────────────────────────────────
+  BackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: rostr-agent-backend
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "512"
+      Memory: "1024"
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ContainerDefinitions:
+        - Name: rostr-agent
+          Image: !Ref ContainerImage
+          Essential: true
+          PortMappings:
+            - ContainerPort: 8080
+              Protocol: tcp
+          Environment:
+            - Name: PORT
+              Value: "8080"
+            - Name: ROSTR_HUB_PATH
+              Value: "/data/.rostr"
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: WORKSPACE_BUCKET_PREFIX
+              Value: !Ref WorkspaceBucketPrefix
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              aws-group: /ecs/rostr-agent
+              aws-region: !Ref AWS::Region
+              aws-stream-prefix: rostr
+  
+  # ── Load Balancer ────────────────────────────────────────────────────────
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: rostr-agent-alb
+      Scheme: internet-facing
+      Type: application
+      SecurityGroups:
+        - !GetAtt ALBSecurityGroup.GroupId
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+  
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: rostr-agent-tg
+      Port: 8080
+      Protocol: HTTP
+      TargetType: ip
+      VpcId: !Ref VpcId
+      HealthCheckPath: /health
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 10
+  
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBTargetGroup
+  
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: rostr-agent-service
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref BackendTaskDefinition
+      DesiredCount: 2
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !GetAtt BackendSecurityGroup.GroupId
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      LoadBalancers:
+        - ContainerName: rostr-agent
+          ContainerPort: 8080
+          TargetGroupArn: !Ref ALBTargetGroup
+  
+  # ── Per-User S3 Workspace Bucket ─────────────────────────────────────────
+  # Primary user workspace bucket
+  UserWorkspaceBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${WorkspaceBucketPrefix}-primary"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+  
+  # Data lake bucket for analytics / long-term storage
+  DataLakeBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${WorkspaceBucketPrefix}-datalake"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: TierToGlacier
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+  
+  # Lambda to auto-create workspace folders per user
+  WorkspaceProvisioner:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: rostr-workspace-provisioner
+      Runtime: python3.11
+      Handler: index.handler
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json, boto3, os
+          s3 = boto3.client('s3')
+          bucket = os.environ.get('WORKSPACE_BUCKET', 'rostr-workspace-primary')
+          
+          def handler(event, context):
+              user_id = event.get('user_id', 'default')
+              prefix = f'workspaces/{user_id}/'
+              
+              # Create workspace "folder" by writing a marker
+              s3.put_object(
+                  Bucket=bucket,
+                  Key=f'{prefix}_workspace_initialized',
+                  Body=json.dumps({
+                      'user_id': user_id,
+                      'created': context.aws_request_id,
+                      'bucket': bucket,
+                      'paths': {
+                          'root': prefix,
+                          'memory': f'{prefix}memory/',
+                          'files': f'{prefix}files/',
+                          'knowledge': f'{prefix}knowledge/',
+                          'config': f'{prefix}config/',
+                      }
+                  })
+              )
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'workspace': {
+                          'bucket': bucket,
+                          'prefix': prefix,
+                          'paths': {
+                              'memory': f's3://{bucket}/{prefix}memory/',
+                              'files': f's3://{bucket}/{prefix}files/',
+                              'knowledge': f's3://{bucket}/{prefix}knowledge/',
+                          }
+                      }
+                  })
+              }
+      Environment:
+        Variables:
+          WORKSPACE_BUCKET: !Ref UserWorkspaceBucket
+
+  # ── API Gateway (REST) ──────────────────────────────────────────────────
+  RestAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: rostr-agent-api
+      Description: "ROSTR Agent Cloud API"
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  
+  ApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestAPI
+      ParentId: !GetAtt RestAPI.RootResourceId
+      PathPart: "{proxy+}"
+  
+  ApiMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestAPI
+      ResourceId: !Ref ApiResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: ANY
+        Uri: !Sub "http://${LoadBalancer.DNSName}/{proxy}"
+        PassthroughBehavior: WHEN_NO_MATCH
+  
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: ApiMethod
+    Properties:
+      RestApiId: !Ref RestAPI
+      StageName: prod
+
+  # ── Route53 DNS ──────────────────────────────────────────────────────────
+  ApiDNS:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub "${DomainName}."
+      Name: !Sub "api.${DomainName}"
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt RestAPI.DomainName
+        HostedZoneId: !GetAtt RestAPI.RegionalDomainName
+      # Note: For CloudFront/Regional, use appropriate alias target
+
+# ── IAM Roles ──────────────────────────────────────────────────────────────
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: WorkspaceAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub "arn:aws:s3:::${WorkspaceBucketPrefix}-*"
+                  - !Sub "arn:aws:s3:::${WorkspaceBucketPrefix}-*/*"
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                Resource: "*"
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3WorkspaceAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub "arn:aws:s3:::${WorkspaceBucketPrefix}-primary/*"
+
+Outputs:
+  ApiEndpoint:
+    Description: "ROSTR Agent API endpoint"
+    Value: !Sub "https://api.${DomainName}"
+  
+  WorkspaceBucket:
+    Description: "Primary workspace S3 bucket"
+    Value: !Ref UserWorkspaceBucket
+  
+  ECSClusterName:
+    Description: "ECS Cluster name"
+    Value: !Ref ECSCluster
+  
+  LoadBalancerDNS:
+    Description: "ALB DNS name"
+    Value: !GetAtt LoadBalancer.DNSName

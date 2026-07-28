@@ -1,0 +1,43 @@
+{
+  "name": "rostr-cloud-backend",
+  "version": "1.0.0",
+  "description": "ROSTR Cloud Backend - Simplified with AWS Bedrock + Workspace Provisioning",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {
+    "@assistant-ui/react": "^0.8.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "express": "^4.19.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.4.0",
+    "ws": "^8.18.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.23.0",
+    "dotenv": "^16.4.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/ws": "^8.5.10",
+    "@types/uuid": "^9.0.8",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "tsx": "^4.15.0",
+    "serverless": "^3.39.0",
+    "serverless-http": "^3.2.0"
+  }
+}

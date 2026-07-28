@@ -1,0 +1,278 @@
+service: rostr-cloud
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'prod'}
+  
+  environment:
+    NODE_OPTIONS: '--enable-source-maps'
+    AWS_REGION: ${self:provider.region}
+    RAG_S3_BUCKET: ${self:custom.ragBucket}
+    RAG_DYNAMO_TABLE: ${self:custom.ragTable}
+    GSTACK_S3_BUCKET: ${self:custom.gstackBucket}
+    GSTACK_DYNAMO_TABLE: ${self:custom.gstackTable}
+    HUB_DYNAMO_TABLE: ${self:custom.hubTable}
+    USERS_TABLE: ${self:custom.usersTable}
+    COGNITO_USER_POOL_ID: ${self:custom.cognitoUserPoolId}
+    COGNITO_CLIENT_ID: ${self:custom.cognitoClientId}
+    JWT_SECRET: ${env:JWT_SECRET}
+    FRONTEND_URL: ${self:custom.frontendUrl}
+    
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - bedrock:InvokeModel
+            - bedrock:InvokeModelWithResponseStream
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:ListBucket
+          Resource:
+            - "arn:aws:s3:::${self:custom.ragBucket}/*"
+            - "arn:aws:s3:::${self:custom.ragBucket}"
+            - "arn:aws:s3:::${self:custom.gstackBucket}/*"
+            - "arn:aws:s3:::${self:custom.gstackBucket}"
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+          Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ragTable}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ragTable}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.gstackTable}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.gstackTable}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.hubTable}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.hubTable}/index/*"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTable}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTable}/index/*"
+        - Effect: Allow
+          Action:
+            - cognito-idp:SignUp
+            - cognito-idp:InitiateAuth
+            - cognito-idp:GetUser
+          Resource: "arn:aws:cognito-idp:${self:provider.region}:*:userpool/${self:custom.cognitoUserPoolId}"
+
+custom:
+  ragBucket: ${self:service}-rag-${self:provider.stage}
+  gstackBucket: ${self:service}-gstack-${self:provider.stage}
+  ragTable: ${self:service}-rag-${self:provider.stage}
+  gstackTable: ${self:service}-gstack-${self:provider.stage}
+  hubTable: ${self:service}-hub-${self:provider.stage}
+  usersTable: ${self:service}-users-${self:provider.stage}
+  cognitoUserPoolId: ${env:COGNITO_USER_POOL_ID}
+  cognitoClientId: ${env:COGNITO_CLIENT_ID}
+  frontendUrl: ${env:FRONTEND_URL, 'https://rostragent.com'}
+
+functions:
+  api:
+    handler: backend/dist/index.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors:
+            origin: ${self:custom.frontendUrl}
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: true
+      - http:
+          path: /
+          method: ANY
+          cors: true
+    memorySize: 1024
+    timeout: 30
+
+  websocket:
+    handler: backend/dist/websocket.handler
+    events:
+      - websocket:
+          route: $connect
+      - websocket:
+          route: $disconnect
+      - websocket:
+          route: $default
+    memorySize: 512
+    timeout: 10
+
+package:
+  patterns:
+    - '!.env'
+    - '!.git/**'
+    - '!.github/**'
+    - '!node_modules/.cache/**'
+    - '!backend/node_modules/**'
+    - '!frontend/**'
+    - '!tests/**'
+
+resources:
+  Resources:
+    # Cognito User Pool
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-users-${self:provider.stage}
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+        Schema:
+          - Name: name
+            AttributeDataType: String
+            Mutable: true
+            Required: false
+
+    # Cognito User Pool Client
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref UserPool
+        ClientName: ${self:service}-web-${self:provider.stage}
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
+        PreventUserExistenceErrors: ENABLED
+
+    # RAG S3 Bucket
+    RagBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.ragBucket}
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteOldObjects
+              Status: Enabled
+              ExpirationInDays: 365
+
+    # G-Stack S3 Bucket
+    GStackBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.gstackBucket}
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteOldExports
+              Prefix: workspaces/*/exports/
+              Status: Enabled
+              ExpirationInDays: 30
+
+    # DynamoDB Tables
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.usersTable}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+
+    RagTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ragTable}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: userId-timestamp-index
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+    GStackTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.gstackTable}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+
+    HubTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.hubTable}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+  Outputs:
+    UserPoolId:
+      Value: !Ref UserPool
+      Export:
+        Name: ${self:service}-user-pool-id-${self:provider.stage}
+    UserPoolClientId:
+      Value: !Ref UserPoolClient
+      Export:
+        Name: ${self:service}-user-pool-client-id-${self:provider.stage}
+    ApiEndpoint:
+      Value:
+        Fn::Join:
+          - ""
+          - ["https://", !Ref ApiGatewayRestApi, ".execute-api.", !Ref AWS::Region, ".amazonaws.com/", !Ref self:provider.stage]
