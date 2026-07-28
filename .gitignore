@@ -1,45 +1,17 @@
-# ROSTR Agent — .gitignore
+# Ignore nested git repos (accidental submodule)
+/rostr-agent/
+
+# Node
+node_modules/
+.next/
 
 # Python
 __pycache__/
-*.py[cod]
-*.so
-*.egg-info/
-dist/
-build/
-.eggs/
-
-# Virtual environments
-venv/
+*.pyc
 .venv/
-env/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
+# Config with secrets
+.env
 
 # OS
 .DS_Store
-Thumbs.db
-
-# Config files with secrets
-.env
-
-# Node (for web/dist bundles — not tracked in source)
-node_modules/
-package-lock.json
-
-# Build artifacts
-*.log
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-
-# Test artifacts
-.coverage
-htmlcov/
-apps/desktop/release/
-.vercel
