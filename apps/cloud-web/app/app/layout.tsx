@@ -20,6 +20,7 @@ export default function AppLayout({
 
   const navItems = [
     { label: "Chat", href: "/app/chat", icon: "💬" },
+    { label: "Sandbox", href: "/app/sandbox", icon: "🖥️" },
     { label: "Skills", href: "/app/skills", icon: "⚙️" },
     { label: "Workspaces", href: "/app/workspaces", icon: "📁" },
     { label: "Integrations", href: "/app/integrations", icon: "🔗" },
