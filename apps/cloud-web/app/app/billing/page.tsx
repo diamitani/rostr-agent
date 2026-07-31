@@ -80,7 +80,7 @@ export default function BillingPage() {
 
               <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
                 <div className="text-sm text-slate-400 mb-1">
-                  Today's Executions
+                  Today&apos;s Executions
                 </div>
                 <div className="text-3xl font-bold">
                   {billing?.executionsToday || 0} /{" "}

@@ -1,146 +1,110 @@
-import { streamText } from "@vercel/ai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { kv } from "@vercel/kv";
-import { sql } from "@vercel/postgres";
-import { headers } from "next/headers";
+import {
+  BedrockRuntimeClient,
+  InvokeModelWithResponseStreamCommand,
+} from "@aws-sdk/client-bedrock-runtime";
+import {
+  createUIMessageStreamResponse,
+  createUIMessageStream,
+} from "ai";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-async function getUserId(): Promise<string> {
-  const headersList = await headers();
-  const authHeader = headersList.get("authorization");
-  const token = authHeader?.split(" ")[1];
+const MODEL_ID =
+  process.env.BEDROCK_MODEL_ID ?? "us.anthropic.claude-sonnet-4-6";
 
-  if (!token) {
-    throw new Error("Unauthorized");
-  }
+const client = new BedrockRuntimeClient({
+  region: process.env.AWS_REGION ?? "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    ...(process.env.AWS_SESSION_TOKEN
+      ? { sessionToken: process.env.AWS_SESSION_TOKEN }
+      : {}),
+  },
+});
 
-  // In production, validate JWT token
-  // For demo, use token as user ID
-  return token.split("-")[0] || "demo-user";
-}
-
-async function saveExecution(
-  userId: string,
-  input: string,
-  output: string,
-  tokensUsed: number
-) {
-  try {
-    await sql`
-      INSERT INTO executions (user_id, input, output, tokens_used, created_at)
-      VALUES (${userId}, ${input}, ${output}, ${tokensUsed}, NOW())
-    `;
-
-    // Track daily usage for free tier
-    const today = new Date().toISOString().split("T")[0];
-    const cacheKey = `executions:${userId}:${today}`;
-    await kv.incr(cacheKey);
-    await kv.expire(cacheKey, 86400);
-  } catch (error) {
-    console.error("Failed to save execution:", error);
-  }
-}
+const SYSTEM = `You are ROSTR Agent — a production AI assistant powered by the ROSTR framework.
+You help users build, deploy, and orchestrate intelligent AI workflows.
+You have built-in PAL (Prompt Compiler), NPAO (Smart Routing), RAG DAL (Grounded Retrieval), and Hub (Persistent Memory).
+Be specific, actionable, and concise. Lead with the answer, then explain.`;
 
 export async function POST(request: Request) {
   try {
-    const userId = await getUserId();
-
-    // Check daily limit for free tier
-    const today = new Date().toISOString().split("T")[0];
-    const cacheKey = `executions:${userId}:${today}`;
-    const count = await kv.get<number>(cacheKey);
-
-    if (count && count >= 10) {
-      // Check actual plan
-      const user = await sql`SELECT plan FROM users WHERE id = ${userId}`;
-      if (user.rows[0]?.plan === "free") {
-        return new Response(
-          JSON.stringify({ error: "Daily limit exceeded" }),
-          { status: 429 }
-        );
-      }
-    }
-
     const { messages } = await request.json();
-    const lastMessage = messages[messages.length - 1];
 
-    // Stream response from Claude
-    const result = await streamText({
-      model: anthropic("claude-3-5-sonnet-20241022"),
-      system: `You are ROSTR, an AI workflow automation assistant powered by Vercel AI SDK.
-You help users with:
-- Orchestrating complex workflows
-- Managing skills and integrations
-- Analyzing data and generating insights
-- Automating repetitive tasks
+    // ai@5 sends UIMessage[] with parts: [{type:"text", text:"..."}]
+    // Normalise to plain {role, content} for Bedrock
+    const normalised = (messages as Array<{
+      role: string;
+      parts?: Array<{ type: string; text?: string }>;
+      content?: string | Array<{ type: string; text: string }>;
+    }>).map((m) => ({
+      role: m.role === "user" || m.role === "assistant" ? m.role : "user",
+      content: m.parts
+        ? m.parts
+            .filter((p) => p.type === "text")
+            .map((p) => p.text ?? "")
+            .join("")
+        : typeof m.content === "string"
+        ? m.content
+        : Array.isArray(m.content)
+        ? m.content
+            .filter((p) => p.type === "text")
+            .map((p) => p.text)
+            .join("")
+        : "",
+    })).filter((m) => m.content.length > 0);
 
-Always be helpful, concise, and action-oriented.`,
-      messages: messages,
-      temperature: 0.7,
-      maxTokens: 2048,
+    const body = JSON.stringify({
+      anthropic_version: "bedrock-2023-05-31",
+      max_tokens: 2048,
+      system: SYSTEM,
+      messages: normalised,
     });
 
-    // Collect full response for database
-    let fullResponse = "";
-    let tokenCount = 0;
+    const command = new InvokeModelWithResponseStreamCommand({
+      modelId: MODEL_ID,
+      contentType: "application/json",
+      accept: "application/json",
+      body: new TextEncoder().encode(body),
+    });
 
-    // Stream the response
-    const encoder = new TextEncoder();
-    const customStream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.fullStream) {
-            if (
-              chunk.type === "text-delta" ||
-              chunk.type === "text-content"
-            ) {
-              const text = "text" in chunk ? chunk.text : "";
-              fullResponse += text;
-              const encoded = encoder.encode(
-                `data: ${JSON.stringify({ type: "text", content: text })}\n\n`
-              );
-              controller.enqueue(encoded);
-            }
-            if (chunk.type === "finish") {
-              tokenCount = chunk.usage?.totalTokens || 0;
-            }
+    const bedrockResponse = await client.send(command);
+    const partId = crypto.randomUUID();
+
+    // Build a UIMessageStream that the @ai-sdk/react client understands
+    const uiStream = createUIMessageStream({
+      execute: async ({ writer }) => {
+        writer.write({ type: "text-start", id: partId });
+        for await (const event of bedrockResponse.body!) {
+          const chunk = event.chunk?.bytes;
+          if (!chunk) continue;
+          const parsed = JSON.parse(new TextDecoder().decode(chunk));
+          if (
+            parsed.type === "content_block_delta" &&
+            parsed.delta?.type === "text_delta"
+          ) {
+            writer.write({
+              type: "text-delta",
+              id: partId,
+              delta: parsed.delta.text ?? "",
+            });
           }
-
-          // Save execution
-          await saveExecution(
-            userId,
-            lastMessage.content,
-            fullResponse,
-            tokenCount
-          );
-
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`)
-          );
-          controller.close();
-        } catch (error) {
-          console.error("Stream error:", error);
-          controller.error(error);
         }
+        writer.write({ type: "text-end", id: partId });
       },
     });
 
-    return new Response(customStream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
-    });
+    return createUIMessageStreamResponse({ stream: uiStream });
   } catch (error) {
-    console.error("API error:", error);
+    console.error("Orchestrate error:", error);
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : "Internal server error",
+        error:
+          error instanceof Error ? error.message : "Internal server error",
       }),
-      { status: 500 }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
