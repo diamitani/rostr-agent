@@ -1,68 +1,58 @@
-import { sql } from "@vercel/postgres";
-import { SignJWT } from "jose";
+// POST /api/auth/login
+// Authenticates with Cognito USER_PASSWORD_AUTH, returns JWT tokens
+import {
+  CognitoIdentityProviderClient,
+  InitiateAuthCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
+
+export const runtime = "nodejs";
+
+const client = new CognitoIdentityProviderClient({ region: "us-east-1" });
+const CLIENT_ID = process.env.COGNITO_CLIENT_ID!;
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
 
-    // Validate input
     if (!email || !password) {
-      return new Response(
-        JSON.stringify({ error: "Email and password required" }),
-        { status: 400 }
+      return Response.json({ error: "Email and password required" }, { status: 400 });
+    }
+
+    const result = await client.send(new InitiateAuthCommand({
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: CLIENT_ID,
+      AuthParameters: {
+        USERNAME: email,
+        PASSWORD: password,
+      },
+    }));
+
+    const auth = result.AuthenticationResult;
+    if (!auth?.IdToken) {
+      return Response.json({ error: "Authentication failed" }, { status: 401 });
+    }
+
+    // Return Cognito ID token (JWT) — client stores as cookie
+    return Response.json({
+      token: auth.IdToken,
+      accessToken: auth.AccessToken,
+      refreshToken: auth.RefreshToken,
+      expiresIn: auth.ExpiresIn,
+    });
+  } catch (err: unknown) {
+    const e = err as { name?: string; message?: string };
+    if (
+      e.name === "NotAuthorizedException" ||
+      e.name === "UserNotFoundException"
+    ) {
+      return Response.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+    if (e.name === "UserNotConfirmedException") {
+      return Response.json(
+        { error: "Email not verified", unconfirmed: true },
+        { status: 403 }
       );
     }
-
-    // For demo, accept demo@example.com / demo123
-    if (email === "demo@example.com" && password === "demo123") {
-      const token = `demo-user-${Date.now()}`;
-      return new Response(JSON.stringify({ token }), { status: 200 });
-    }
-
-    // In production, query database and verify password hash
-    try {
-      const user = await sql`
-        SELECT id, password_hash FROM users WHERE email = ${email}
-      `;
-
-      if (user.rows.length === 0) {
-        return new Response(
-          JSON.stringify({ error: "Invalid credentials" }),
-          { status: 401 }
-        );
-      }
-
-      // In production, use bcrypt to verify password
-      // For now, simple comparison
-      const userRow = user.rows[0];
-      if (userRow.password_hash !== password) {
-        return new Response(
-          JSON.stringify({ error: "Invalid credentials" }),
-          { status: 401 }
-        );
-      }
-
-      // Generate JWT token
-      const secret = new TextEncoder().encode(
-        process.env.JWT_SECRET || "demo-secret"
-      );
-      const token = await new SignJWT({ userId: userRow.id, email })
-        .setProtectedHeader({ alg: "HS256" })
-        .setExpirationTime("24h")
-        .sign(secret);
-
-      return new Response(JSON.stringify({ token }), { status: 200 });
-    } catch (dbError) {
-      console.error("Database error:", dbError);
-      // Fallback for demo if DB not configured
-      const token = `user-${email.split("@")[0]}-${Date.now()}`;
-      return new Response(JSON.stringify({ token }), { status: 200 });
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500 }
-    );
+    return Response.json({ error: e.message ?? "Login failed" }, { status: 500 });
   }
 }
