@@ -6,7 +6,7 @@
 #
 # Author: Patrick Diamitani
 # License: MIT
-# Version: 1.0.0
+# Version: 1.0.1
 # Paper: arXiv:2604.XXXXX
 
 """
@@ -19,7 +19,7 @@ Four pillars, one framework:
   4. HUB  — Rostr Hub (Persistent Reference Architecture)
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Patrick Diamitani"
 __license__ = "MIT"
 

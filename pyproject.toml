@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rostr-agent"
-version = "1.0.0"
+version = "1.0.1"
 description = "ROSTR Agent — The self-improving AI agent framework with built-in multi-agent orchestration (PAL, NPAO, RAG DAL, Rostr Hub)"
 readme = "README.md"
 # Upper bound is load-bearing, not cosmetic. uv resolves the project's

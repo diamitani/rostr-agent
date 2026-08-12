@@ -114,7 +114,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="ROSTR Agent API",
-    version="1.0.0",
+    version="1.0.1",
     description="ROSTR/PAL-powered cloud agent backend with AWS Agent Core",
     lifespan=lifespan,
 )
@@ -137,7 +137,7 @@ async def health():
     return {
         "status": "ok",
         "service": "rostr-agent",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "pal": "ready",
         "npao": "ready",
         "hub": "ready",
@@ -386,7 +386,7 @@ async def _call_anthropic(api_key: str, model: str, messages: list, max_tokens: 
                 "Content-Type": "application/json",
             },
             json={
-                "model": model if model != "rostr-agent" else "claude-sonnet-4-20250514",
+                "model": model if model != "rostr-agent" else "claude-sonnet-4-5-20250929",
                 "system": system,
                 "messages": chat_messages,
                 "max_tokens": max_tokens,

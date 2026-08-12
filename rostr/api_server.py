@@ -19,7 +19,7 @@ from rostr.npao import NPAO
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="ROSTR API", version="1.0.0", docs_url="/docs")
+app = FastAPI(title="ROSTR API", version="1.0.1", docs_url="/docs")
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,7 +72,7 @@ class PALResponse(BaseModel):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "1.0.0", "service": "rostr-api"}
+    return {"status": "ok", "version": "1.0.1", "service": "rostr-api"}
 
 
 # ── PAL enhance (standalone) ──────────────────────────────────────────────────
@@ -121,7 +121,7 @@ async def chat(request: ChatRequest):
         if request.provider == "openai":
             model = "gpt-4o"
         else:
-            model = "claude-sonnet-4-20250514"
+            model = "claude-sonnet-4-5-20250929"
 
     # Step 3 — build messages for the LLM
     system = (
