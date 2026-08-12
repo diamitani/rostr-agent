@@ -21,6 +21,7 @@ import os
 import json
 import time
 import uuid
+import asyncio
 import logging
 from datetime import datetime
 from typing import Optional, Any
@@ -34,10 +35,12 @@ from pydantic import BaseModel, Field
 # ── ROSTR Core ──────────────────────────────────────────────────────────────
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from rostr.pal.compiler import PALCompiler
 from rostr.npao import NPAO, PhaseType
 from rostr.hub import RostrHub, StateLevel
+from harness_client import HarnessClient, list_agent_skills
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("rostr-backend")
@@ -46,6 +49,7 @@ logger = logging.getLogger("rostr-backend")
 pal_compiler = PALCompiler()
 npao = NPAO()
 hub = RostrHub(base_path=os.environ.get("ROSTR_HUB_PATH", os.path.join(os.path.dirname(__file__), "..", ".rostr")))
+harness = HarnessClient()
 
 # ── Per-user workspace management (S3-backed) ────────────────────────────────
 WORKSPACES: dict[str, dict] = {}  # in-memory, S3 sync in production
@@ -262,8 +266,8 @@ async def chat_completions(request: Request):
             reply = await _call_openai(api_key, req.model, enhanced_messages, req.max_tokens, req.temperature)
         elif provider == "anthropic":
             reply = await _call_anthropic(api_key, req.model, enhanced_messages, req.max_tokens)
-        elif provider == "bedrock" or provider == "aws":
-            reply = await _call_bedrock(user_message, enhanced_prompt, phase_name)
+        elif provider in ("bedrock", "aws", "agentcore", "harness"):
+            reply = await _call_harness(req.model, req.messages, user_id)
         else:
             reply = await _call_openai(api_key, req.model, enhanced_messages, req.max_tokens, req.temperature)
     except Exception as e:
@@ -340,6 +344,14 @@ async def get_workspace(user_id: str):
         "created": ws["created"],
     }
 
+@app.get("/api/skills")
+async def get_skills():
+    """Return the Artispreneur agent-skill manifest (master + 6 sub-agents)."""
+    return {
+        "object": "list",
+        "data": list_agent_skills(),
+    }
+
 # ═══════════════════════════════════════════════════════════════════════════
 # LLM Provider Calls (BYOK — user keys used per-request, never stored)
 # ═══════════════════════════════════════════════════════════════════════════
@@ -383,39 +395,40 @@ async def _call_anthropic(api_key: str, model: str, messages: list, max_tokens: 
         resp.raise_for_status()
         return resp.json()["content"][0]["text"]
 
-async def _call_bedrock(user_message: str, enhanced_prompt: str, phase: str) -> str:
+def _invoke_harness_blocking(model: str, messages: list, user_id: str) -> str:
+    """Blocking harness invocation — run off the event loop via asyncio.to_thread."""
+    resp = harness.invoke(model, messages, user_id=user_id)
+    text = ""
+    for event in resp["stream"]:
+        if "contentBlockDelta" in event:
+            text += event["contentBlockDelta"]["delta"].get("text", "")
+        elif "messageStop" in event:
+            break
+    return text.strip()
+
+
+async def _call_harness(model: str, req_messages: list, user_id: str) -> str:
     """
-    AWS Bedrock Agent Core invocation.
-    Uses the rostr/agentcore_backend.py handler through boto3.
-    Falls back to a simple LLM response if Bedrock is unavailable.
+    AWS Bedrock AgentCore invocation via invoke_harness.
+
+    Routes to the deployed ROSTR harness, which runs its own PAL/NPAO/RAG-DAL/Hub
+    pipeline — so we pass the raw conversation (user/assistant turns) and let the
+    harness compile intent. `invoke_harness` is synchronous, so it runs in a worker
+    thread to keep the FastAPI event loop responsive.
     """
-    try:
-        import boto3
-        bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
-        
-        # Use Amazon Nova or Claude on Bedrock
-        body = json.dumps({
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 2048,
-            "system": f"Phase: {phase}. You are ROSTR Agent. Be concise and actionable.",
-            "messages": [{"role": "user", "content": enhanced_prompt}],
-        })
-        
-        resp = bedrock.invoke_model(
-            modelId="anthropic.claude-sonnet-4-20250514",
-            contentType="application/json",
-            body=body,
-        )
-        result = json.loads(resp["body"].read())
-        return result["content"][0]["text"]
-    except Exception as e:
-        logger.warning(f"Bedrock call failed, using fallback: {e}")
-        return (
-            f"[ROSTR Agent — {phase.upper()} phase]\n\n"
-            f"PAL Enhanced: {enhanced_prompt}\n\n"
-            f"(AWS Bedrock Agent Core is configured but needs deployment. "
-            f"Run `cdk deploy` in the infra/ directory to provision the full stack.)"
-        )
+    agentcore_messages = []
+    for m in req_messages:
+        role = getattr(m, "role", None)
+        content = getattr(m, "content", "")
+        if role == "system":
+            continue  # harness supplies its own system prompt
+        agentcore_messages.append({"role": role, "content": [{"text": content}]})
+
+    if not agentcore_messages:
+        agentcore_messages = [{"role": "user", "content": [{"text": "Hello"}]}]
+
+    reply = await asyncio.to_thread(_invoke_harness_blocking, model, agentcore_messages, user_id)
+    return reply or "(no response from ROSTR harness)"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Entrypoint

@@ -80,7 +80,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
   const [showConfig, setShowConfig] = useState(false);
-  const [provider, setProvider] = useState("openai");
+  const [provider, setProvider] = useState("agentcore");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -147,9 +147,9 @@ export default function Home() {
               onChange={(e) => setProvider(e.target.value)}
               className="px-3 py-1.5 text-xs bg-zinc-800 border border-zinc-700 rounded-md text-zinc-200"
             >
-              <option value="openai">OpenAI</option>
-              <option value="anthropic">Anthropic</option>
-              <option value="bedrock">AWS Bedrock</option>
+              <option value="agentcore">ROSTR AgentCore</option>
+              <option value="openai">OpenAI (BYOK)</option>
+              <option value="anthropic">Anthropic (BYOK)</option>
             </select>
           </div>
         </div>
