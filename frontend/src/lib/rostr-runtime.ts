@@ -20,7 +20,7 @@ export function useRostrModelAdapter(apiKey?: string): ChatModelAdapter {
       ? "http://localhost:8080"
       : "https://api.rostragent.com");
 
-  const provider = process.env.NEXT_PUBLIC_LLM_PROVIDER || "openai";
+  const provider = process.env.NEXT_PUBLIC_LLM_PROVIDER || "agentcore";
   const userKey = apiKey || process.env.NEXT_PUBLIC_BYOK_KEY || "";
 
   return {
