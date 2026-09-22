@@ -50,7 +50,7 @@ export default function HomePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<string>("us.anthropic.claude-sonnet-4-6-v1:0");
+  const [selectedModel, setSelectedModel] = useState<string>("spacexai/grok-4.5");
   const [currentPal, setCurrentPal] = useState<PALCompilation | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -128,6 +128,8 @@ export default function HomePage() {
 
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (byokConfig?.gatewayKey) headers["x-ai-gateway-key"] = byokConfig.gatewayKey;
+      if (byokConfig?.xaiKey) headers["x-xai-key"] = byokConfig.xaiKey;
       if (byokConfig?.anthropicKey) headers["x-anthropic-key"] = byokConfig.anthropicKey;
       if (byokConfig?.openaiKey) headers["x-openai-key"] = byokConfig.openaiKey;
       if (byokConfig?.awsAccessKey) headers["x-aws-key"] = byokConfig.awsAccessKey;

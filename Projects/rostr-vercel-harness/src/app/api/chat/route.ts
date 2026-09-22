@@ -1,8 +1,13 @@
 import { streamText } from "ai";
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
-import { resolveAIModel } from "@/lib/gateway/router";
+import {
+  createGatewayModel,
+  gatewayProviderOptions,
+  modelFor,
+  resolveGateway,
+  resolveLegacyModel,
+  routeFromPhase,
+  VERCEL_MODELS,
+} from "@/lib/gateway/router";
 import { compilePALIntent } from "@/lib/pal/compiler";
 import { memoryStore } from "@/lib/pal/memory";
 
@@ -20,7 +25,9 @@ export async function POST(req: Request) {
       });
     }
 
-    // Extract potential BYOK headers
+    const gatewayKey =
+      req.headers.get("x-ai-gateway-key") || byok?.gatewayKey || process.env.AI_GATEWAY_API_KEY;
+    const xaiKey = req.headers.get("x-xai-key") || byok?.xaiKey || process.env.XAI_API_KEY;
     const anthropicKey =
       req.headers.get("x-anthropic-key") || byok?.anthropicKey || process.env.ANTHROPIC_API_KEY;
     const openaiKey =
@@ -32,12 +39,10 @@ export async function POST(req: Request) {
     const awsRegion =
       req.headers.get("x-aws-region") || byok?.awsRegion || process.env.AWS_REGION || "us-east-1";
 
-    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user")?.content || "";
+    const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === "user")?.content || "";
 
-    // Step 1: PAL Intent Compilation
     const pal = compilePALIntent(lastUserMessage, customWeights);
 
-    // Step 2: Record to episodic memory
     memoryStore.add({
       namespace: "rostr_decisions",
       content: `Compiled: "${pal.intent}" -> Phase: ${pal.phase}, Priority: ${pal.priorityScore}/10`,
@@ -46,59 +51,58 @@ export async function POST(req: Request) {
       metadata: { subAgents: pal.subAgents, priorityScore: pal.priorityScore },
     });
 
+    const route = routeFromPhase(pal.phase);
+    const resolved = resolveGateway({ gatewayKey, xaiKey });
+    const catalog = Object.values(VERCEL_MODELS);
+    const modelId =
+      preferredModel && catalog.includes(preferredModel)
+        ? preferredModel
+        : modelFor(route, resolved.models);
+
     const systemPrompt = `You are DI-CTO, the Diamitani Industries governed CTO AI agent.
 Operating under the ROSTR / PAL Framework:
 - Phase: ${pal.phase}
 - Domain: ${pal.domain}
 - Priority Score: ${pal.priorityScore}/10
+- Jev route: ${route} → ${modelId} via ${resolved.provider}
 - Active Sub-Agents: ${pal.subAgents.join(", ")}
 - Approval Gates: ${pal.approvalGates.join(", ") || "None (Auto-Approved)"}
 - Operating Principles: Start with user outcome, preserve intent discipline, prefer vertical slices, make work traceable.
 
 Deliver clear, production-grade solutions, vertical slices, and architectural code.`;
 
-    // Step 3: Check BYOK or Server Provider Resolution
-    let modelInstance = null;
-
-    if (anthropicKey && (preferredModel?.includes("anthropic") || preferredModel?.includes("claude") || !preferredModel)) {
-      try {
-        const anthropicProvider = createAnthropic({ apiKey: anthropicKey });
-        modelInstance = anthropicProvider("claude-3-5-sonnet-20241022");
-      } catch {
-        // Fall back
-      }
-    } else if (openaiKey && (preferredModel?.includes("openai") || preferredModel?.includes("gpt"))) {
-      try {
-        const openaiProvider = createOpenAI({ apiKey: openaiKey });
-        modelInstance = openaiProvider("gpt-4o");
-      } catch {
-        // Fall back
-      }
-    } else if (awsAccessKey && awsSecretKey) {
-      try {
-        const bedrockProvider = createAmazonBedrock({
-          region: awsRegion,
-          accessKeyId: awsAccessKey,
-          secretAccessKey: awsSecretKey,
-        });
-        modelInstance = bedrockProvider("us.anthropic.claude-sonnet-4-6-v1:0");
-      } catch {
-        // Fall back
-      }
-    } else {
-      modelInstance = resolveAIModel(preferredModel);
-    }
+    const modelInstance =
+      createGatewayModel(modelId, {
+        gatewayKey,
+        xaiKey,
+        anthropicKey,
+        openaiKey,
+        route,
+      }) ||
+      resolveLegacyModel(preferredModel, {
+        anthropicKey,
+        openaiKey,
+        awsAccessKey,
+        awsSecretKey,
+        awsRegion,
+      });
 
     if (modelInstance) {
       try {
         const result = streamText({
           model: modelInstance,
           system: systemPrompt,
-          messages: messages.map((m: any) => ({
+          messages: messages.map((m: { role: string; content: string }) => ({
             role: m.role as "user" | "assistant" | "system",
             content: m.content,
           })),
           temperature: 0.2,
+          providerOptions: gatewayProviderOptions({
+            route,
+            xaiKey,
+            anthropicKey,
+            openaiKey,
+          }),
         });
 
         return result.toTextStreamResponse();
@@ -107,11 +111,11 @@ Deliver clear, production-grade solutions, vertical slices, and architectural co
       }
     }
 
-    // Step 4: High-Speed Deterministic PAL Synthesis Stream
     const simulatedResponse = `### [ROSTR PAL Pipeline - Phase: ${pal.phase}]
-**NPAO 4D Priority Score:** \`${pal.priorityScore}/10\` | **Active Sub-Agents:** \`${pal.subAgents.join(", ")}\`
+**NPAO 4D Priority Score:** \`${pal.priorityScore}/10\` | **Jev route:** \`${route}\` → \`${modelId}\`
+**Door:** \`${resolved.provider}\` (${resolved.auth})
 
-I have compiled and orchestrated your request through the 5-stage ROSTR / PAL compiler:
+I have compiled and orchestrated your request through the 5-stage ROSTR / PAL compiler. Generation is waiting on Vercel AI Gateway (set \`AI_GATEWAY_API_KEY\`, publish for OIDC, or add an xAI key).
 
 1. **Intent Decomposition:** Domain: \`${pal.domain}\` in Phase: \`${pal.phase}\`.
 2. **Governance & Soul Directive:** Loaded CTO Soul rules and active workspace blueprints.
@@ -121,24 +125,7 @@ I have compiled and orchestrated your request through the 5-stage ROSTR / PAL co
         ? `⚠️ Active Gate: \`${pal.approvalGates.join(", ")}\` (Recorded in session audit).`
         : `✅ Zero blocking approval gates required.`
     }
-5. **Memory Compounding:** Persisted state vector to namespace \`rostr_decisions\`.
-
-#### Architecture & Vertical Slice:
-\`\`\`typescript
-// ROSTR Governed Vertical Slice
-import { compilePALIntent } from "@/lib/pal/compiler";
-import { SUB_AGENTS_REGISTRY } from "@/lib/pal/subagents";
-
-export async function executeRostrTask() {
-  const pal = compilePALIntent("${pal.intent.replace(/"/g, '\\"')}");
-  console.log("Phase:", pal.phase, "Priority:", pal.priorityScore);
-  // Dispatched sub-agent execution
-  return { status: "success", phase: pal.phase, subAgents: pal.subAgents };
-}
-\`\`\`
-
-- **Execution Runtime**: Verified via Vercel Code Sandbox.
-- **Next Step**: Click **"Run in Sandbox"** or run \`/evals\` to verify compliance.`;
+5. **Memory Compounding:** Persisted state vector to namespace \`rostr_decisions\`.`;
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -147,19 +134,18 @@ export async function executeRostrTask() {
         for (let i = 0; i < chunks.length; i++) {
           const textChunk = (i === 0 ? "" : " ") + chunks[i];
           controller.enqueue(encoder.encode(textChunk));
-          await new Promise((res) => setTimeout(res, 18));
+          await new Promise((res) => setTimeout(res, 12));
         }
         controller.close();
       },
     });
 
     return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-      },
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error?.message || "Internal server error" }), {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

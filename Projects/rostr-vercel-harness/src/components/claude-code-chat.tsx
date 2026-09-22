@@ -202,6 +202,8 @@ export function ClaudeCodeChat({
 
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (byokConfig?.gatewayKey) headers["x-ai-gateway-key"] = byokConfig.gatewayKey;
+      if (byokConfig?.xaiKey) headers["x-xai-key"] = byokConfig.xaiKey;
       if (byokConfig?.anthropicKey) headers["x-anthropic-key"] = byokConfig.anthropicKey;
       if (byokConfig?.openaiKey) headers["x-openai-key"] = byokConfig.openaiKey;
       if (byokConfig?.awsAccessKey) headers["x-aws-key"] = byokConfig.awsAccessKey;
@@ -312,7 +314,7 @@ export function ClaudeCodeChat({
           <button
             onClick={onOpenBYOK}
             className={`px-2 py-0.5 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer ${
-              byokConfig?.anthropicKey || byokConfig?.openaiKey || byokConfig?.awsAccessKey
+              byokConfig?.gatewayKey || byokConfig?.xaiKey || byokConfig?.anthropicKey || byokConfig?.openaiKey || byokConfig?.awsAccessKey
                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                 : "bg-slate-900 text-slate-400 border border-white/5 hover:text-white"
             }`}

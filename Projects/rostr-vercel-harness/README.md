@@ -26,7 +26,8 @@ A modern, production-grade Next.js 15+ / React 19 web application harness showca
 
 5. **EVE / Evaluation Suite & AI Gateway**:
    - 10 automated gold eval test cases testing phase classification, NPAO accuracy, approval gating, and tool security.
-   - AI Gateway multi-model routing table, cost calculator, and latency tracker.
+   - Vercel AI Gateway is the generation door: OIDC on deploy, `AI_GATEWAY_API_KEY` locally, xAI as BYOK / preview fallback.
+   - Jev picks frontier / subagent / cheap / background per PAL phase. Live catalog slugs (`spacexai/grok-4.5`, `anthropic/claude-sonnet-4.6`).
 
 ## 🚀 Running Locally
 

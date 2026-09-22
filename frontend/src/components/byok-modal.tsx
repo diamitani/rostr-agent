@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 
 export interface BYOKConfig {
+  gatewayKey: string;
+  xaiKey: string;
   anthropicKey: string;
   openaiKey: string;
   awsAccessKey: string;
@@ -29,6 +31,8 @@ interface BYOKModalProps {
 }
 
 export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
+  const [gatewayKey, setGatewayKey] = useState<string>("");
+  const [xaiKey, setXaiKey] = useState<string>("");
   const [anthropicKey, setAnthropicKey] = useState<string>("");
   const [openaiKey, setOpenaiKey] = useState<string>("");
   const [awsAccessKey, setAwsAccessKey] = useState<string>("");
@@ -42,6 +46,8 @@ export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
       const saved = localStorage.getItem("rostr_byok_config");
       if (saved) {
         const parsed = JSON.parse(saved);
+        setGatewayKey(parsed.gatewayKey || "");
+        setXaiKey(parsed.xaiKey || "");
         setAnthropicKey(parsed.anthropicKey || "");
         setOpenaiKey(parsed.openaiKey || "");
         setAwsAccessKey(parsed.awsAccessKey || "");
@@ -58,6 +64,8 @@ export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const config: BYOKConfig = {
+      gatewayKey: gatewayKey.trim(),
+      xaiKey: xaiKey.trim(),
       anthropicKey: anthropicKey.trim(),
       openaiKey: openaiKey.trim(),
       awsAccessKey: awsAccessKey.trim(),
@@ -73,7 +81,7 @@ export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
     setTestStatus("testing");
     await new Promise((r) => setTimeout(r, 600));
 
-    if (anthropicKey || openaiKey || (awsAccessKey && awsSecretKey)) {
+    if (gatewayKey || xaiKey || anthropicKey || openaiKey || (awsAccessKey && awsSecretKey)) {
       setTestStatus("success");
     } else {
       setTestStatus("fallback");
@@ -86,6 +94,8 @@ export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
 
   const handleClearKeys = () => {
     localStorage.removeItem("rostr_byok_config");
+    setGatewayKey("");
+    setXaiKey("");
     setAnthropicKey("");
     setOpenaiKey("");
     setAwsAccessKey("");
@@ -131,6 +141,56 @@ export function BYOKModal({ isOpen, onClose, onSave }: BYOKModalProps) {
 
         {/* Key Form */}
         <form onSubmit={handleSave} className="mt-4 space-y-3.5">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
+                <span>Vercel AI Gateway key</span>
+                <span className="text-[10px] font-mono text-cyan-400">(preferred door)</span>
+              </label>
+              <a
+                href="https://vercel.com/docs/ai-gateway"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] text-slate-500 hover:text-cyan-300 flex items-center gap-1"
+              >
+                <span>Docs</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+            <input
+              type={showKeys ? "text" : "password"}
+              value={gatewayKey}
+              onChange={(e) => setGatewayKey(e.target.value)}
+              placeholder="vck_...  (or leave empty — OIDC on Vercel)"
+              className="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono text-cyan-300 focus:ring-1 focus:ring-cyan-500"
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
+                <span>xAI API Key</span>
+                <span className="text-[10px] font-mono text-orange-400">(Grok BYOK / preview)</span>
+              </label>
+              <a
+                href="https://console.x.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] text-slate-500 hover:text-cyan-300 flex items-center gap-1"
+              >
+                <span>Get Key</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+            <input
+              type={showKeys ? "text" : "password"}
+              value={xaiKey}
+              onChange={(e) => setXaiKey(e.target.value)}
+              placeholder="xai-..."
+              className="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono text-orange-300 focus:ring-1 focus:ring-orange-500"
+            />
+          </div>
+
           {/* Anthropic Key */}
           <div>
             <div className="flex items-center justify-between mb-1">

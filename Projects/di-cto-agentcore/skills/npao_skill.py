@@ -1,10 +1,22 @@
 """
-NPAO (Natural Priority Agent Orchestrator) skill for DI-CTO AgentCore.
-Calculates 4D priority matrices and orchestrates sub-agent queues.
+NPAO skill. Deterministic 4D formula is unchanged.
+
+When a prompt is supplied, axis scores come from System One instead of the
+caller inventing 5.5 / 6.5 / 7.0.
 """
 
-from typing import Any
+from __future__ import annotations
+
+import sys
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Optional
+
+_TOOLS = Path(__file__).resolve().parents[3] / "Tools"
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
+
+from system_one.npao import score_npao  # noqa: E402
 
 
 @dataclass
@@ -19,16 +31,12 @@ class NPAOResult:
     queue_rank: int
     assigned_subagents: list[str]
     rationale: str
+    category: str = "Priority"
 
 
 class NPAOSkill:
-    """
-    NPAO Orchestration Engine:
-    Priority = (Phase × 0.35) + (Dependency × 0.30) + (Business × 0.25) + (Resource × 0.10)
-    """
-
     SKILL_ID = "di-cto-npao-orchestrator"
-    VERSION = "1.0.0"
+    VERSION = "1.1.0"
 
     PHASE_SCORES = {
         "Debugging": 10.0,
@@ -45,24 +53,37 @@ class NPAOSkill:
         dependency_score: float = 5.0,
         business_score: float = 6.0,
         resource_score: float = 7.0,
+        prompt: Optional[str] = None,
     ) -> NPAOResult:
-        phase_score = self.PHASE_SCORES.get(phase, 4.0)
+        if prompt:
+            live = score_npao(task_id, prompt, phase=phase)
+            return NPAOResult(
+                task_id=live.task_id,
+                phase=live.phase,
+                phase_score=live.phase_score,
+                dependency_score=live.dependency_score,
+                business_score=live.business_score,
+                resource_score=live.resource_score,
+                final_priority=live.final_priority,
+                queue_rank=1 if live.final_priority >= 7.0 else (2 if live.final_priority >= 5.0 else 3),
+                assigned_subagents=live.assigned_subagents,
+                rationale=live.rationale,
+                category=live.category,
+            )
 
-        # 4D weighted sum
+        phase_score = self.PHASE_SCORES.get(phase, 4.0)
         score = (
             (phase_score * 0.35)
             + (dependency_score * 0.30)
             + (business_score * 0.25)
             + (resource_score * 0.10)
         )
-
         rationale = (
             f"Phase [{phase}] contributes {phase_score * 0.35:.2f} (35%), "
             f"Dependency [{dependency_score}] contributes {dependency_score * 0.30:.2f} (30%), "
             f"Business [{business_score}] contributes {business_score * 0.25:.2f} (25%), "
             f"Resource [{resource_score}] contributes {resource_score * 0.10:.2f} (10%)."
         )
-
         subagent_map = {
             "PreD": ["product-architect", "jtbd-npao-planner"],
             "Design": ["product-architect", "experience-engineer", "agent-runtime-engineer"],
@@ -70,7 +91,6 @@ class NPAOSkill:
             "Deploy": ["devops-release-engineer", "identity-commerce-qa"],
             "Debugging": ["application-engineer", "security-reviewer"],
         }
-
         return NPAOResult(
             task_id=task_id,
             phase=phase,
