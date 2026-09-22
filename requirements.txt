@@ -5,3 +5,6 @@ httpx>=0.27.0
 boto3>=1.34.0
 fastapi>=0.110.0
 uvicorn>=0.29.0
+typesafe-sdk>=0.7.0
+# Optional LLM comparison harness only — not production PAL:
+# pip install 'system-one-adapter[openai]'
