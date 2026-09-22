@@ -91,6 +91,8 @@ export function NavigationHeader({
   const isDevToolsActive = ["sandbox", "evals", "gateway"].includes(activeTab);
 
   const hasBYOK = !!(
+    byokConfig?.gatewayKey ||
+    byokConfig?.xaiKey ||
     byokConfig?.anthropicKey ||
     byokConfig?.openaiKey ||
     byokConfig?.awsAccessKey
@@ -423,14 +425,14 @@ export function NavigationHeader({
             aria-label="Select AI Model"
             className="bg-transparent text-cyan-700 text-xs font-semibold font-mono focus:outline-none cursor-pointer pr-1"
           >
-            <option value="us.anthropic.claude-sonnet-4-6-v1:0" className="bg-white text-slate-900">
-              Claude Sonnet 4.6 (Bedrock)
+            <option value="spacexai/grok-4.5" className="bg-white text-slate-900">
+              Grok 4.5 (Vercel AI Gateway)
             </option>
-            <option value="claude-3-5-sonnet-20241022" className="bg-white text-slate-900">
-              Claude 3.5 Sonnet (Direct)
+            <option value="anthropic/claude-sonnet-4.6" className="bg-white text-slate-900">
+              Claude Sonnet 4.6 (Gateway)
             </option>
-            <option value="gpt-4o" className="bg-white text-slate-900">
-              GPT-4o (OpenAI)
+            <option value="google/gemini-3.1-flash-lite" className="bg-white text-slate-900">
+              Gemini Flash Lite (cheap)
             </option>
           </select>
         </div>
@@ -658,9 +660,9 @@ export function NavigationHeader({
               onChange={(e) => onSelectModel(e.target.value)}
               className="w-full p-2 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none"
             >
-              <option value="us.anthropic.claude-sonnet-4-6-v1:0">Claude Sonnet 4.6 (Bedrock)</option>
-              <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Direct)</option>
-              <option value="gpt-4o">GPT-4o (OpenAI)</option>
+              <option value="spacexai/grok-4.5">Grok 4.5 (Vercel AI Gateway)</option>
+              <option value="anthropic/claude-sonnet-4.6">Claude Sonnet 4.6 (Gateway)</option>
+              <option value="google/gemini-3.1-flash-lite">Gemini Flash Lite (cheap)</option>
             </select>
           </div>
         </div>

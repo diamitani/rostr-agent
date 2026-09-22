@@ -3,9 +3,10 @@
 Resolution order:
 1. TYPESAFE_API_KEY          → real Jev via typesafe_sdk
 2. AI_GATEWAY_API_KEY        → Vercel AI Gateway typesafe-ai/jev
-3. OPENROUTER_API_KEY        → OpenRouter ~typesafe/jev-latest
-4. system-one-adapter + LLM  → comparison only (not production PAL)
-5. local engine              → typed offline fallback
+3. VERCEL_OIDC_TOKEN         → same door (automatic on a Vercel deploy)
+4. OPENROUTER_API_KEY        → OpenRouter ~typesafe/jev-latest
+5. system-one-adapter + LLM  → comparison only (not production PAL)
+6. local engine              → typed offline fallback
 """
 
 from __future__ import annotations
@@ -37,7 +38,7 @@ class SystemOneClient:
             return evaluate_local(state)
 
         typesafe_key = _env("TYPESAFE_API_KEY")
-        gateway_key = _env("AI_GATEWAY_API_KEY")
+        gateway_key = _env("AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN")
         openrouter_key = _env("OPENROUTER_API_KEY")
 
         if typesafe_key or gateway_key or openrouter_key:
@@ -70,6 +71,7 @@ class SystemOneClient:
         if typesafe_key:
             kwargs["api_key"] = typesafe_key
         elif gateway_key:
+            backend = "gateway-oidc" if _env("VERCEL_OIDC_TOKEN") and not _env("AI_GATEWAY_API_KEY") else "gateway"
             kwargs.update(
                 {
                     "api_key": gateway_key,
@@ -77,7 +79,6 @@ class SystemOneClient:
                     "model": "typesafe-ai/jev",
                 }
             )
-            backend = "gateway"
             model = "typesafe-ai/jev"
         elif openrouter_key:
             kwargs.update(

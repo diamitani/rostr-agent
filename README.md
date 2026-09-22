@@ -43,7 +43,8 @@ npm run build
 ### 5. System One / Jev
 ```bash
 export TYPESAFE_API_KEY=sk-...          # real Jev
-# or AI_GATEWAY_API_KEY / OPENROUTER_API_KEY
+# or AI_GATEWAY_API_KEY / VERCEL_OIDC_TOKEN / OPENROUTER_API_KEY
+# Generation: AI_GATEWAY_API_KEY (or OIDC on Vercel) / XAI_API_KEY
 # or ROSTR_SYSTEM_ONE_ADAPTER=1         # LLM adapter, comparison only
 
 python3 -m unittest discover -s Projects/di-cto-agentcore/tests -v
@@ -69,7 +70,7 @@ Diamitani Industries CTO Agent System
 ├── 3. Vercel Tech Stack Harness (Projects/rostr-vercel-harness/)
 │   ├── Vercel AI SDK Core & Streaming (/api/chat)
 │   ├── PAL compiler at src/lib/jev (wired from src/lib/pal/compiler.ts)
-│   ├── Vercel AI Gateway (Multi-model router & telemetry: Bedrock, Anthropic, OpenAI, Local)
+│   ├── Vercel AI Gateway (Jev route → spacexai/grok-4.5 / claude-sonnet-4.6 / gemini flash)
 │   ├── Vercel Code Sandbox (/api/sandbox/execute - JS, TS, Python execution)
 │   ├── EVE Benchmark Suite (10 automated gold eval test cases)
 │   └── Patrick Diamitani YouTube Showcase (vKGtIY-MR8Y embedded player & demo scrubber)

@@ -78,9 +78,34 @@ Unchanged: ContextEngine, Hub persistence.
 `Tools/system_one/` is the decision layer. Resolution order:
 
 1. `TYPESAFE_API_KEY` → Jev
-2. `AI_GATEWAY_API_KEY` → Vercel gateway
-3. `OPENROUTER_API_KEY` → OpenRouter
-4. `ROSTR_SYSTEM_ONE_ADAPTER=1` → LLM adapter (comparison)
-5. else local typed engine
+2. `AI_GATEWAY_API_KEY` → Vercel AI Gateway `typesafe-ai/jev`
+3. `VERCEL_OIDC_TOKEN` → same door (automatic on a Vercel deploy)
+4. `OPENROUTER_API_KEY` → OpenRouter
+5. `ROSTR_SYSTEM_ONE_ADAPTER=1` → LLM adapter (comparison)
+6. else local typed engine
+
+Generation (System Two) is a separate door: `Tools/system_one/gateway.py` and
+`Projects/rostr-vercel-harness/src/lib/gateway/router.ts`. Auth order:
+
+1. `AI_GATEWAY_API_KEY` → `https://ai-gateway.vercel.sh/v1`
+2. `VERCEL_OIDC_TOKEN` → same
+3. `XAI_API_KEY` → `https://api.x.ai/v1`
+
+Live catalog slugs (dots, not hyphens):
+
+| Jev route | model |
+| --- | --- |
+| frontier | `spacexai/grok-4.5` |
+| subagent | `anthropic/claude-sonnet-4.6` |
+| cheap | `google/gemini-3.1-flash-lite` |
+| background | `google/gemini-2.5-flash-lite` |
+
+PAL phase → route: PreD=cheap, Design=subagent, Development/Deploy/Debugging=frontier.
+
+```bash
+python3 Tools/pydantic_deep_runner.py --via-gateway "Fix error 500 in chat stream handler"
+python3 Tools/pydantic_deep_runner.py --compile-only "Research whether we should build a billing refund workflow"
+```
 
 The coding-agent harness (explicit chunks, heatmap excerpts, costed routing) lives in [diamitani/rostr-core](https://github.com/diamitani/rostr-core/pull/1).
+

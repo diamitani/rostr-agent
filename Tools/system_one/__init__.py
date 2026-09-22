@@ -1,13 +1,13 @@
-"""ROSTR System One decision layer.
-
-Jev (or a local/adapter stand-in) answers typed questions over unstructured
-state. Specialists still generate strings. This package is the decision
-hot path for PAL, NPAO, allocation, and approval gates.
-"""
-
 from .client import SystemOneClient, evaluate
 from .pal import compile_pal, PALCompilation
 from .npao import score_npao, NPAOResult
+from .gateway import (
+    complete_for_route,
+    model_for,
+    public_gateway_info,
+    resolve_gateway,
+    route_from_phase,
+)
 
 __all__ = [
     "SystemOneClient",
@@ -16,4 +16,9 @@ __all__ = [
     "PALCompilation",
     "score_npao",
     "NPAOResult",
+    "complete_for_route",
+    "model_for",
+    "public_gateway_info",
+    "resolve_gateway",
+    "route_from_phase",
 ]
